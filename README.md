@@ -1,22 +1,23 @@
 # NGXSMK GameNet Optimizer
 
+[![Version](https://img.shields.io/badge/Version-2.0.0-blue.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
 [![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Open Source](https://img.shields.io/badge/Open%20Source-Yes-brightgreen.svg)](https://github.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-lightgrey.svg)](https://github.com)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/actions)
-[![GitHub stars](https://img.shields.io/github/stars/toozuuu/ngxsmk-gamenet-optimizer.svg)](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/toozuuu/ngxsmk-gamenet-optimizer.svg)](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/network)
-[![Downloads](https://img.shields.io/badge/Downloads-Latest-blue.svg)](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/releases)
-[![UI](https://img.shields.io/badge/UI-Modern%20Dark%20Theme-00ff88.svg)](https://github.com/toozuuu/ngxsmk-gamenet-optimizer)
-[![Performance](https://img.shields.io/badge/Performance-Optimized%20for%20All%20PCs-00d4ff.svg)](https://github.com/toozuuu/ngxsmk-gamenet-optimizer)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/actions)
+[![GitHub stars](https://img.shields.io/github/stars/NGXSMK/ngxsmk-gamenet-optimizer.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/NGXSMK/ngxsmk-gamenet-optimizer.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/network)
+[![Downloads](https://img.shields.io/badge/Downloads-Latest-blue.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
+[![UI](https://img.shields.io/badge/UI-Modern%20Dark%20Theme-00ff88.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer)
+[![Performance](https://img.shields.io/badge/Performance-Optimized%20for%20All%20PCs-00d4ff.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer)
 
 > **A powerful, open-source gaming optimization suite with modern UI that enhances your gaming experience through advanced network optimization, system tuning, and real-time performance monitoring.**
 
 ## 🚀 Quick Start
 
 ### Download Pre-built Executable (Recommended)
-1. **Download** the latest release from [Releases](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/releases)
+1. **Download** the latest release from [Releases](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
 2. **Extract** the executable from the zip file
 3. **Run** `NGXSMK_GameNet_Optimizer_Advanced.exe`
 4. **Enjoy** optimized gaming performance!
@@ -24,17 +25,14 @@
 ### Build from Source
 ```bash
 # Clone the repository
-git clone https://github.com/toozuuu/ngxsmk-gamenet-optimizer.git
+git clone https://github.com/NGXSMK/ngxsmk-gamenet-optimizer.git
 cd ngxsmk-gamenet-optimizer
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Build executable
-python build_simple_advanced.py
-
 # Run the application
-python main.py
+python run.py
 ```
 
 ## ✨ What is NGXSMK GameNet Optimizer?
@@ -132,37 +130,25 @@ This project uses GitHub Actions for automated building and testing:
 - **📋 Build Status** - Real-time build status monitoring
 
 ### Download Latest Build
-Visit the [Actions](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/actions) page to download the latest automated build artifacts.
+Visit the [Actions](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/actions) page to download the latest automated build artifacts.
 
-### Method 1: Quick Install
+### Installation (From Source)
 ```bash
-git clone https://github.com/toozuuu/ngxsmk-gamenet-optimizer.git
+git clone https://github.com/NGXSMK/ngxsmk-gamenet-optimizer.git
 cd ngxsmk-gamenet-optimizer
 pip install -r requirements.txt
-python launcher.py
+python run.py
 ```
 
-### Method 2: Simple Installer
+### Build Executable
 ```bash
-python install_simple.py
-```
-
-### Method 3: Platform-Specific
-
-**Windows:**
-```bash
-run.bat
-```
-
-**Linux/Mac:**
-```bash
-./run.sh
+python scripts/build_simple_advanced.py
 ```
 
 ## 📖 Usage
 
 ### Basic Usage
-1. **Launch** the application using `python main.py` or run the executable
+1. **Launch** the application using `python run.py` or run the executable
 2. **Use Quick Actions** for one-click optimization (Optimize All, Clean RAM, Test Network, Gaming Mode)
 3. **Use individual tabs** to configure specific features
 4. **Monitor performance** in real-time with live status indicators
@@ -182,35 +168,22 @@ run.bat
 
 ```
 ngxsmk-gamenet-optimizer/
-├── main.py                    # Main application
-├── build_simple_advanced.py   # Build script
-├── build_local.py             # Local development build
-├── requirements.txt           # Python dependencies
-├── requirements_minimal.txt   # Minimal dependencies
-├── modules/                   # Core optimization modules
-│   ├── fps_boost.py          # FPS optimization
-│   ├── network_analyzer.py   # Network analysis
-│   ├── multi_internet.py     # Multi-connection management
-│   ├── traffic_shaper.py     # Traffic shaping
-│   ├── ram_cleaner.py        # Memory optimization
-│   ├── lol_optimizer.py      # League of Legends specific
-│   ├── config_manager.py     # Configuration management
-│   ├── settings_dialog.py    # Settings interface
-│   ├── advanced_optimizer.py # Advanced optimization
-│   ├── system_monitor.py     # System monitoring
-│   ├── network_optimizer.py # Network optimization
-│   └── gaming_optimizer.py   # Gaming optimization
-├── .github/workflows/         # CI/CD pipelines
-│   ├── build.yml             # Main build workflow
-│   ├── dev-build.yml         # Development builds
-│   ├── release.yml           # Release workflow
-│   └── test.yml              # Testing workflow
-├── dist/                     # Built executables
-├── LICENSE                   # MIT License
-├── CONTRIBUTING.md           # Contributing guidelines
-├── CODE_OF_CONDUCT.md       # Code of conduct
-├── CHANGELOG.md              # Version history
-└── README.md                 # This file
+├── run.py                     # Main entry point
+├── requirements.txt            # Python dependencies
+├── setup.py                    # Package installation script
+├── src/                        # Source code
+│   └── ngx_optimizer/          # Main package
+│       ├── app.py              # Main application logic
+│       ├── core_config.py      # Low-resource PC configurations
+│       └── modules/            # Core optimization modules
+│           ├── fps_boost.py
+│           ├── ... (all modules)
+├── scripts/                    # Build and installation scripts
+├── docs/                       # Project documentation and guides
+├── tests/                      # Unit and integration tests
+├── assets/                     # Application assets (icons, images)
+├── LICENSE                     # MIT License
+└── README.md                   # This file
 ```
 
 ## 🤝 Contributing
@@ -224,12 +197,12 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ### Development Setup
 ```bash
-git clone https://github.com/toozuuu/ngxsmk-gamenet-optimizer.git
+git clone https://github.com/NGXSMK/ngxsmk-gamenet-optimizer.git
 cd ngxsmk-gamenet-optimizer
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python main.py
+python run.py
 ```
 
 ### Local Building
@@ -320,8 +293,8 @@ This project uses GitHub Actions for automated building, testing, and deployment
 3. **Memory Cleanup Issues**: Ensure sufficient system resources
 
 ### Getting Help
-- **GitHub Issues**: [Report bugs and request features](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/issues)
-- **Discussions**: [Community discussions](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/discussions)
+- **GitHub Issues**: [Report bugs and request features](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/issues)
+- **Discussions**: [Community discussions](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/discussions)
 - **Email**: sachindilshan040@gmail.com
 
 ## 📄 License
@@ -352,10 +325,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **GitHub Issues**: [Report bugs and request features](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/issues)
-- **Discussions**: [Community discussions](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/discussions)
+- **GitHub Issues**: [Report bugs and request features](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/issues)
+- **Discussions**: [Community discussions](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/discussions)
 - **Email**: sachindilshan040@gmail.com
-- **Maintainer**: [@toozuuu](https://github.com/toozuuu)
+- **Maintainer**: [@NGXSMK](https://github.com/NGXSMK)
 
 ---
 

@@ -79,9 +79,9 @@ This Code of Conduct is adapted from:
 ## Contact
 
 If you have questions about this Code of Conduct, please contact:
-- **GitHub Issues**: Create an issue with the "conduct" label
-- **Email**: conduct@gamenet-optimizer.dev
-- **Maintainers**: @yourusername
+- **GitHub**: [https://github.com/NGXSMK/ngxsmk-gamenet-optimizer](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer)
+- **Email**: sachindilshan040@gmail.com
+- **Maintainers**: @NGXSMK
 
 ## License
 

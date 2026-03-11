@@ -9,28 +9,8 @@ import subprocess
 import shutil
 from pathlib import Path
 
-def build_advanced_executable():
-    """Build the advanced executable with all features"""
-    
-    print("🚀 Building Advanced NGXSMK GameNet Optimizer...")
-    print("=" * 60)
-    
-    # Check if PyInstaller is installed
-    try:
-        import PyInstaller
-        print(f"✅ PyInstaller found: {PyInstaller.__version__}")
-    except ImportError:
-        print("❌ PyInstaller not found. Installing...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller"], check=True)
-    
-    # Clean previous builds
-    print("🧹 Cleaning previous builds...")
-    for folder in ["build", "dist", "__pycache__"]:
-        if os.path.exists(folder):
-            shutil.rmtree(folder)
-            print(f"   Removed {folder}/")
-    
-    # PyInstaller command with advanced options
+def get_pyinstaller_command():
+    """Build the PyInstaller command with advanced options"""
     cmd = [
         "pyinstaller",
         "--onefile",                    # Single executable file
@@ -71,36 +51,64 @@ def build_advanced_executable():
     if not os.path.exists("icon.ico"):
         cmd.remove("--icon=icon.ico")
     
+    return cmd
+
+def log_build_status():
+    """Log the status of the build and list output files"""
+    print("✅ Build completed successfully!")
+    print("\n📁 Output files:")
+    
+    # Check if executable was created
+    exe_path = "dist/NGXSMK_GameNet_Optimizer_Advanced.exe"
+    if os.path.exists(exe_path):
+        size_mb = os.path.getsize(exe_path) / (1024 * 1024)
+        print(f"   📦 Executable: {exe_path} ({size_mb:.1f} MB)")
+    else:
+        print("   ❌ Executable not found!")
+    
+    # List all files in dist directory
+    if os.path.exists("dist"):
+        print("\n📋 All files in dist/:")
+        for root, dirs, files in os.walk("dist"):
+            for file in files:
+                file_path = os.path.join(root, file)
+                size_kb = os.path.getsize(file_path) / 1024
+                print(f"   📄 {file_path} ({size_kb:.1f} KB)")
+    
+    print("\n🎉 Advanced build completed successfully!")
+    print("🚀 You can now run the executable from the dist/ folder")
+
+def build_advanced_executable():
+    """Build the advanced executable with all features"""
+    
+    print("🚀 Building Advanced NGXSMK GameNet Optimizer...")
+    print("=" * 60)
+    
+    # Check if PyInstaller is installed
+    try:
+        import PyInstaller
+        print(f"✅ PyInstaller found: {PyInstaller.__version__}")
+    except ImportError:
+        print("❌ PyInstaller not found. Installing...")
+        subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller"], check=True)
+    
+    # Clean previous builds
+    print("🧹 Cleaning previous builds...")
+    for folder in ["build", "dist", "__pycache__"]:
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+            print(f"   Removed {folder}/")
+    
+    cmd = get_pyinstaller_command()
+    
     print("🔨 Building executable...")
     print(f"Command: {' '.join(cmd)}")
     print("-" * 60)
     
     try:
         # Run PyInstaller
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
-        
-        print("✅ Build completed successfully!")
-        print("\n📁 Output files:")
-        
-        # Check if executable was created
-        exe_path = "dist/NGXSMK_GameNet_Optimizer_Advanced.exe"
-        if os.path.exists(exe_path):
-            size_mb = os.path.getsize(exe_path) / (1024 * 1024)
-            print(f"   📦 Executable: {exe_path} ({size_mb:.1f} MB)")
-        else:
-            print("   ❌ Executable not found!")
-        
-        # List all files in dist directory
-        if os.path.exists("dist"):
-            print("\n📋 All files in dist/:")
-            for root, dirs, files in os.walk("dist"):
-                for file in files:
-                    file_path = os.path.join(root, file)
-                    size_kb = os.path.getsize(file_path) / 1024
-                    print(f"   📄 {file_path} ({size_kb:.1f} KB)")
-        
-        print("\n🎉 Advanced build completed successfully!")
-        print("🚀 You can now run the executable from the dist/ folder")
+        subprocess.run(cmd, check=True, capture_output=True, text=True)
+        log_build_status()
         
     except subprocess.CalledProcessError as e:
         print(f"❌ Build failed with error: {e}")
@@ -270,9 +278,9 @@ dist/NGXSMK_GameNet_Optimizer_Advanced.exe
 
 ## 📞 Support
 
-- **GitHub**: https://github.com/toozuuu/ngxsmk-gamenet-optimizer
+- **GitHub**: https://github.com/NGXSMK/ngxsmk-gamenet-optimizer
 - **Email**: sachindilshan040@gmail.com
-- **Maintainer**: toozuuu
+- **Maintainer**: NGXSMK
 
 ## 📄 License
 

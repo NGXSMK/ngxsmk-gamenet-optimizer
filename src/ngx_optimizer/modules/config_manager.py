@@ -10,7 +10,11 @@ from typing import Dict, Any, Optional
 import threading
 
 class ConfigManager:
-    def __init__(self, config_file: str = "config.json"):
+    def __init__(self, config_file: str = None):
+        if config_file is None:
+            # Store config next to the project root, not CWD
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            config_file = os.path.join(project_root, "config.json")
         self.config_file = config_file
         self.config = {}
         self.lock = threading.Lock()
@@ -65,7 +69,7 @@ class ConfigManager:
     def _get_default_config(self) -> Dict[str, Any]:
         """Get default configuration"""
         return {
-            "version": "1.0.0",
+            "version": "2.0.0",
             "last_updated": time.time(),
             "fps_boost": {
                 "enabled": True,
@@ -233,19 +237,19 @@ class ConfigManager:
     def get_config_summary(self) -> Dict[str, Any]:
         """Get configuration summary"""
         return {
-            "version": self.get_setting("version", "1.0.0"),
+            "version": self.get_setting("version", "2.0.0"),
             "last_updated": self.get_setting("last_updated", time.time()),
             "modules_enabled": {
-                "fps_boost": self.get_setting("fps_boost.enabled", True),
-                "network_analyzer": self.get_setting("network_analyzer.enabled", True),
-                "multi_internet": self.get_setting("multi_internet.enabled", True),
-                "traffic_shaper": self.get_setting("traffic_shaper.enabled", True),
-                "ram_cleaner": self.get_setting("ram_cleaner.enabled", True)
+                "fps_boost": self.config.get("fps_boost", {}).get("enabled", True),
+                "network_analyzer": self.config.get("network_analyzer", {}).get("enabled", True),
+                "multi_internet": self.config.get("multi_internet", {}).get("enabled", True),
+                "traffic_shaper": self.config.get("traffic_shaper", {}).get("enabled", True),
+                "ram_cleaner": self.config.get("ram_cleaner", {}).get("enabled", True)
             },
             "auto_features": {
-                "auto_clean": self.get_setting("ram_cleaner.auto_clean", False),
-                "auto_analysis": self.get_setting("network_analyzer.auto_analysis", False),
-                "auto_failover": self.get_setting("multi_internet.auto_failover", True)
+                "auto_clean": self.config.get("ram_cleaner", {}).get("auto_clean", False),
+                "auto_analysis": self.config.get("network_analyzer", {}).get("auto_analysis", False),
+                "auto_failover": self.config.get("multi_internet", {}).get("auto_failover", True)
             }
         }
     

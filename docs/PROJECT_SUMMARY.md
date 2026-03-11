@@ -143,7 +143,7 @@ gamenet-optimizer/
 
 ## 📞 Support & Resources
 
-- **GitHub**: Main repository and issue tracking
+- **GitHub**: [https://github.com/NGXSMK/ngxsmk-gamenet-optimizer](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer)
 - **Documentation**: Comprehensive README and guides
 - **Community**: Contributing guidelines and code of conduct
 - **License**: MIT license for maximum freedom

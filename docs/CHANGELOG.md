@@ -5,6 +5,16 @@ All notable changes to GameNet Optimizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-03-11
+
+### Added
+- **Premium UI Overhaul**: Implemented a state-of-the-art dark theme with vibrant accents and modern typography.
+- **Glassmorphism Design**: Added modern semi-transparent elements for a depth-rich user experience.
+- **System-Wide Stabilization**: Resolved critical syntax and runtime errors across all optimization modules.
+- **Adaptive Sizing**: Improved UI scaling for both low-end and high-end PCs.
+- **Enhanced Monitoring**: Refined real-time status indicators and system metrics tracking.
+- **Modernized Dialogs**: Revamped About and Settings dialogs with premium branding and improved layout.
+
 ## [Unreleased]
 
 ### Added

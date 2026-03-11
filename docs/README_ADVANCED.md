@@ -121,9 +121,9 @@ dist/NGXSMK_GameNet_Optimizer_Advanced.exe
 
 ## 📞 Support
 
-- **GitHub**: https://github.com/toozuuu/ngxsmk-gamenet-optimizer
+- **GitHub**: https://github.com/NGXSMK/ngxsmk-gamenet-optimizer
 - **Email**: sachindilshan040@gmail.com
-- **Maintainer**: toozuuu
+- **Maintainer**: NGXSMK
 
 ## 📄 License
 
