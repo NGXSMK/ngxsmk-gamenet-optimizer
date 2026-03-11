@@ -163,11 +163,12 @@ class AdvancedOptimizer:
                 'percentage': psutil.virtual_memory().percent
             }
             
+            disk_root = os.path.splitdrive(os.getcwd())[0] + '\\' if platform.system() == 'Windows' else '/'
             disk_info = {
-                'total': psutil.disk_usage('/').total,
-                'used': psutil.disk_usage('/').used,
-                'free': psutil.disk_usage('/').free,
-                'percentage': psutil.disk_usage('/').percent
+                'total': psutil.disk_usage(disk_root).total,
+                'used': psutil.disk_usage(disk_root).used,
+                'free': psutil.disk_usage(disk_root).free,
+                'percentage': psutil.disk_usage(disk_root).percent
             }
             
             network_info = {
@@ -203,7 +204,7 @@ class AdvancedOptimizer:
                     if sensor.SensorType == 'Temperature' and 'CPU' in sensor.Name:
                         return float(sensor.Value)
             return None
-        except:
+        except Exception:
             return None
     
     def _calculate_system_health_score(self, cpu_info: Dict, memory_info: Dict, disk_info: Dict) -> int:
@@ -243,7 +244,7 @@ class AdvancedOptimizer:
             
             return max(0, min(100, score))
             
-        except:
+        except Exception:
             return 50  # Default score if calculation fails
     
     def _intelligent_cpu_optimization(self) -> Dict[str, any]:
@@ -295,7 +296,7 @@ class AdvancedOptimizer:
                 elif plan == "balanced":
                     subprocess.run(["powercfg", "/setactive", "381b4222-f694-41f0-9685-ff5bb260df2e"], 
                                  capture_output=True, check=True)
-        except:
+        except Exception:
             pass
     
     def _optimize_cpu_scheduling(self):
@@ -307,9 +308,9 @@ class AdvancedOptimizer:
                     if any(game in proc.info['name'].lower() for game in 
                            ['league', 'valorant', 'cs2', 'fortnite', 'apex']):
                         proc.nice(psutil.HIGH_PRIORITY_CLASS)
-                except:
+                except Exception:
                     pass
-        except:
+        except Exception:
             pass
     
     def _enable_cpu_power_saving(self):
@@ -319,7 +320,7 @@ class AdvancedOptimizer:
             subprocess.run(["powercfg", "/setacvalueindex", "SCHEME_CURRENT", 
                            "SUB_PROCESSOR", "PROCTHROTTLEMAX", "50"], 
                           capture_output=True, check=True)
-        except:
+        except Exception:
             pass
     
     def _optimize_cpu_affinity(self):
@@ -331,9 +332,9 @@ class AdvancedOptimizer:
                     if any(game in proc.info['name'].lower() for game in 
                            ['league', 'valorant', 'cs2', 'fortnite', 'apex']):
                         proc.cpu_affinity(list(range(psutil.cpu_count())))
-                except:
+                except Exception:
                     pass
-        except:
+        except Exception:
             pass
     
     def _advanced_gpu_optimization(self) -> Dict[str, any]:
@@ -368,7 +369,7 @@ class AdvancedOptimizer:
             # This would typically involve GPU-specific optimizations
             # For now, we'll optimize system memory for GPU-intensive tasks
             pass
-        except:
+        except Exception:
             pass
     
     def _set_gpu_performance_mode(self):
@@ -377,7 +378,7 @@ class AdvancedOptimizer:
             # This would involve GPU-specific power management
             # For now, we'll optimize system settings
             pass
-        except:
+        except Exception:
             pass
     
     def _optimize_gpu_driver(self):
@@ -386,7 +387,7 @@ class AdvancedOptimizer:
             # This would involve GPU driver optimizations
             # For now, we'll optimize system settings
             pass
-        except:
+        except Exception:
             pass
     
     def _smart_memory_optimization(self) -> Dict[str, any]:
@@ -447,7 +448,7 @@ class AdvancedOptimizer:
                                    ['chrome', 'firefox', 'edge', 'discord', 'spotify']):
                                 # Don't kill essential processes, just optimize
                                 pass
-                except:
+                except Exception:
                     pass
             
             # Force garbage collection
@@ -456,7 +457,7 @@ class AdvancedOptimizer:
             
             return freed_memory
             
-        except:
+        except Exception:
             return 0
     
     def _optimize_memory_fragmentation(self):
@@ -465,7 +466,7 @@ class AdvancedOptimizer:
             # This would involve memory defragmentation techniques
             # For now, we'll perform basic memory optimization
             pass
-        except:
+        except Exception:
             pass
     
     def _enable_memory_compression(self):
@@ -474,7 +475,7 @@ class AdvancedOptimizer:
             # This would involve enabling Windows memory compression
             # For now, we'll perform basic memory optimization
             pass
-        except:
+        except Exception:
             pass
     
     def _intelligent_network_optimization(self) -> Dict[str, any]:
@@ -513,7 +514,7 @@ class AdvancedOptimizer:
             # This would involve network buffer optimization
             # For now, we'll perform basic network optimization
             pass
-        except:
+        except Exception:
             pass
     
     def _optimize_tcp_settings(self):
@@ -522,7 +523,7 @@ class AdvancedOptimizer:
             # This would involve TCP optimization for gaming
             # For now, we'll perform basic network optimization
             pass
-        except:
+        except Exception:
             pass
     
     def _optimize_dns_settings(self):
@@ -531,7 +532,7 @@ class AdvancedOptimizer:
             # This would involve DNS optimization
             # For now, we'll perform basic network optimization
             pass
-        except:
+        except Exception:
             pass
     
     def _optimize_network_adapter(self):
@@ -540,7 +541,7 @@ class AdvancedOptimizer:
             # This would involve network adapter optimization
             # For now, we'll perform basic network optimization
             pass
-        except:
+        except Exception:
             pass
     
     def _gaming_specific_optimization(self) -> Dict[str, any]:
@@ -576,7 +577,7 @@ class AdvancedOptimizer:
                 subprocess.run(["reg", "add", "HKEY_CURRENT_USER\\Software\\Microsoft\\GameBar", 
                                "/v", "AllowAutoGameMode", "/t", "REG_DWORD", "/d", "1", "/f"], 
                               capture_output=True, check=True)
-        except:
+        except Exception:
             pass
     
     def _optimize_gaming_performance(self):
@@ -585,7 +586,7 @@ class AdvancedOptimizer:
             # This would involve gaming-specific optimizations
             # For now, we'll perform basic gaming optimization
             pass
-        except:
+        except Exception:
             pass
     
     def _optimize_anti_cheat(self):
@@ -594,7 +595,7 @@ class AdvancedOptimizer:
             # This would involve anti-cheat optimization
             # For now, we'll perform basic gaming optimization
             pass
-        except:
+        except Exception:
             pass
     
     def _streaming_optimization(self) -> Dict[str, any]:
@@ -625,7 +626,7 @@ class AdvancedOptimizer:
             # This would involve streaming-specific optimizations
             # For now, we'll perform basic streaming optimization
             pass
-        except:
+        except Exception:
             pass
     
     def _optimize_streaming_network(self):
@@ -634,7 +635,7 @@ class AdvancedOptimizer:
             # This would involve streaming network optimization
             # For now, we'll perform basic network optimization
             pass
-        except:
+        except Exception:
             pass
     
     def _start_monitoring(self):
@@ -642,7 +643,7 @@ class AdvancedOptimizer:
         try:
             self.monitoring_thread = threading.Thread(target=self._monitoring_loop, daemon=True)
             self.monitoring_thread.start()
-        except:
+        except Exception:
             pass
     
     def _monitoring_loop(self):
@@ -654,7 +655,7 @@ class AdvancedOptimizer:
                     'timestamp': datetime.now().isoformat(),
                     'cpu_usage': psutil.cpu_percent(interval=1),
                     'memory_usage': psutil.virtual_memory().percent,
-                    'disk_usage': psutil.disk_usage('/').percent,
+                    'disk_usage': psutil.disk_usage(os.path.splitdrive(os.getcwd())[0] + '\\' if platform.system() == 'Windows' else '/').percent,
                     'network_io': psutil.net_io_counters()
                 }
                 
@@ -667,7 +668,7 @@ class AdvancedOptimizer:
                 
                 time.sleep(5)  # Update every 5 seconds
                 
-            except:
+            except Exception:
                 time.sleep(5)
     
     def _generate_ai_recommendations(self, analysis: Dict) -> List[str]:
@@ -707,7 +708,7 @@ class AdvancedOptimizer:
             
             return recommendations
             
-        except:
+        except Exception:
             return ["AI recommendations temporarily unavailable"]
     
     def stop_optimization(self):

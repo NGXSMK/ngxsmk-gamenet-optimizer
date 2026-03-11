@@ -14,6 +14,13 @@ from typing import Dict, List, Tuple, Optional
 from datetime import datetime
 import winreg
 
+# Registry keys
+GAME_BAR_REG_KEY = "HKEY_CURRENT_USER\\Software\\Microsoft\\GameBar"
+
+# powercfg literals
+SET_AC_VALUE = "/setacvalueindex"
+SCHEME_CURRENT = "SCHEME_CURRENT"
+
 class GamingOptimizer:
     """Advanced gaming optimizer with game detection and performance tuning"""
     
@@ -107,36 +114,46 @@ class GamingOptimizer:
     def _detect_running_games(self) -> List[Dict]:
         """Detect currently running games"""
         detected_games = []
-        
         try:
-            for proc in psutil.process_iter(['pid', 'name', 'exe']):
+            for proc in psutil.process_iter(['pid', 'name']):
                 try:
-                    proc_name = proc.info['name'].lower()
-                    
-                    for game_key, game_profile in self.game_profiles.items():
-                        for process_name in game_profile['processes']:
-                            if process_name.lower() in proc_name:
-                                if game_key not in [game['key'] for game in detected_games]:
-                                    detected_games.append({
-                                        'key': game_key,
-                                        'name': game_profile['name'],
-                                        'processes': [proc.info['name']],
-                                        'pid': proc.info['pid']
-                                    })
-                                else:
-                                    # Add process to existing game
-                                    for game in detected_games:
-                                        if game['key'] == game_key:
-                                            game['processes'].append(proc.info['name'])
-                                            break
-                except Exception as e:
-                    print(f"Process iteration error: {e}")
+                    game_info = self._get_game_info_for_process(proc)
+                    if game_info:
+                        self._add_or_update_detected_game(detected_games, game_info)
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
                     continue
-                                
         except Exception as e:
             print(f"Game detection error: {e}")
-        
         return detected_games
+
+    def _get_game_info_for_process(self, proc) -> Optional[Dict]:
+        """Check if a process matches any game profile"""
+        proc_name = proc.info['name'].lower()
+        for game_key, game_profile in self.game_profiles.items():
+            for process_name in game_profile['processes']:
+                if process_name.lower() in proc_name:
+                    return {
+                        'key': game_key,
+                        'name': game_profile['name'],
+                        'proc_name': proc.info['name'],
+                        'pid': proc.info['pid']
+                    }
+        return None
+
+    def _add_or_update_detected_game(self, detected_games: List[Dict], game_info: Dict):
+        """Add a new game to detected list or update existing one"""
+        for game in detected_games:
+            if game['key'] == game_info['key']:
+                if game_info['proc_name'] not in game['processes']:
+                    game['processes'].append(game_info['proc_name'])
+                return
+        
+        detected_games.append({
+            'key': game_info['key'],
+            'name': game_info['name'],
+            'processes': [game_info['proc_name']],
+            'pid': game_info['pid']
+        })
     
     def _apply_general_gaming_optimizations(self) -> List[Dict]:
         """Apply general gaming optimizations"""
@@ -165,9 +182,6 @@ class GamingOptimizer:
         optimizations = []
         
         try:
-            game_key = game['key']
-            game_profile = self.game_profiles.get(game_key, {})
-            
             # Set process priorities
             optimizations.append(self._set_game_process_priorities(game))
             
@@ -219,26 +233,20 @@ class GamingOptimizer:
                 try:
                     # Enable Game Mode
                     optimizations.append("Enabling Windows Game Mode")
-                    subprocess.run(["reg", "add", "HKEY_CURRENT_USER\\Software\\Microsoft\\GameBar", 
+                    subprocess.run(["reg", "add", GAME_BAR_REG_KEY, 
                                    "/v", "AllowAutoGameMode", "/t", "REG_DWORD", "/d", "1", "/f"], 
                                   capture_output=True, check=False)
                     
                     # Disable Game Bar notifications
                     optimizations.append("Disabling Game Bar notifications")
-                    subprocess.run(["reg", "add", "HKEY_CURRENT_USER\\Software\\Microsoft\\GameBar", 
+                    subprocess.run(["reg", "add", GAME_BAR_REG_KEY, 
                                    "/v", "ShowStartupPanel", "/t", "REG_DWORD", "/d", "0", "/f"], 
                                   capture_output=True, check=False)
                     
                     # Enable Game Mode for all games
                     optimizations.append("Enabling Game Mode for all games")
-                    subprocess.run(["reg", "add", "HKEY_CURRENT_USER\\Software\\Microsoft\\GameBar", 
+                    subprocess.run(["reg", "add", GAME_BAR_REG_KEY, 
                                    "/v", "AutoGameModeEnabled", "/t", "REG_DWORD", "/d", "1", "/f"], 
-                                  capture_output=True, check=False)
-                    
-                    # Disable Windows Game Bar
-                    optimizations.append("Disabling Windows Game Bar")
-                    subprocess.run(["reg", "add", "HKEY_CURRENT_USER\\Software\\Microsoft\\GameBar", 
-                                   "/v", "AutoGameModeEnabled", "/t", "REG_DWORD", "/d", "0", "/f"], 
                                   capture_output=True, check=False)
                     
                 except Exception as e:
@@ -269,19 +277,19 @@ class GamingOptimizer:
                     
                     # Disable CPU throttling
                     optimizations.append("Disabling CPU throttling")
-                    subprocess.run(["powercfg", "/setacvalueindex", "SCHEME_CURRENT", 
+                    subprocess.run(["powercfg", SET_AC_VALUE, SCHEME_CURRENT, 
                                    "SUB_PROCESSOR", "PROCTHROTTLEMAX", "100"], 
                                   capture_output=True, check=False)
                     
                     # Set minimum CPU state to 100%
                     optimizations.append("Setting minimum CPU state to 100%")
-                    subprocess.run(["powercfg", "/setacvalueindex", "SCHEME_CURRENT", 
+                    subprocess.run(["powercfg", SET_AC_VALUE, SCHEME_CURRENT, 
                                    "SUB_PROCESSOR", "PROCTHROTTLEMIN", "100"], 
                                   capture_output=True, check=False)
                     
                     # Disable USB selective suspend
                     optimizations.append("Disabling USB selective suspend")
-                    subprocess.run(["powercfg", "/setacvalueindex", "SCHEME_CURRENT", 
+                    subprocess.run(["powercfg", SET_AC_VALUE, SCHEME_CURRENT, 
                                    "SUB_USB", "USBSELECTIVESUSPEND", "0"], 
                                   capture_output=True, check=False)
                     
@@ -303,23 +311,17 @@ class GamingOptimizer:
             optimizations = []
             
             if platform.system() == "Windows":
-                # Disable Windows Defender real-time protection for gaming
-                optimizations.append("Optimizing Windows Defender for gaming")
-                subprocess.run(["powershell", "-Command", 
-                               "Set-MpPreference -DisableRealtimeMonitoring $true"], 
-                              capture_output=True, check=True)
-                
-                # Disable Windows Update during gaming
-                optimizations.append("Disabling Windows Update during gaming")
-                subprocess.run(["powershell", "-Command", 
-                               "Set-Service -Name wuauserv -StartupType Disabled"], 
-                              capture_output=True, check=True)
-                
-                # Optimize Windows for gaming
+                # Optimize Windows Multimedia System Profile for gaming
                 optimizations.append("Optimizing Windows for gaming")
                 subprocess.run(["powershell", "-Command", 
                                "Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile' -Name SystemResponsiveness -Value 0"], 
-                              capture_output=True, check=True)
+                              capture_output=True, check=False)
+                
+                # Optimize Windows game scheduling
+                optimizations.append("Optimizing game scheduling responsiveness")
+                subprocess.run(["powershell", "-Command", 
+                               "Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games' -Name 'Scheduling Category' -Value 'High'"], 
+                              capture_output=True, check=False)
             
             return {
                 'type': 'Gaming Performance Settings',
@@ -341,10 +343,10 @@ class GamingOptimizer:
                 subprocess.run(["netsh", "int", "tcp", "set", "global", "autotuninglevel=normal"], 
                              capture_output=True, check=True)
                 
-                # Disable Nagle's algorithm for gaming
+                # Disable Nagle's algorithm for gaming (reduces latency)
                 optimizations.append("Disabling Nagle's algorithm for gaming")
-                subprocess.run(["netsh", "int", "tcp", "set", "global", "nagle=enabled"], 
-                             capture_output=True, check=True)
+                subprocess.run(["netsh", "int", "tcp", "set", "global", "nagle=disabled"], 
+                             capture_output=True, check=False)
                 
                 # Optimize UDP for gaming
                 optimizations.append("Optimizing UDP for gaming")
@@ -397,7 +399,6 @@ class GamingOptimizer:
             optimizations = []
             
             game_key = game['key']
-            game_profile = self.game_profiles.get(game_key, {})
             
             if game_key == 'league_of_legends':
                 optimizations.append("Optimizing League of Legends settings")
@@ -577,7 +578,7 @@ class GamingOptimizer:
         try:
             self.optimization_thread = threading.Thread(target=self._gaming_monitoring_loop, daemon=True)
             self.optimization_thread.start()
-        except:
+        except Exception:
             pass
     
     def _gaming_monitoring_loop(self):
@@ -592,44 +593,45 @@ class GamingOptimizer:
                 
                 time.sleep(5)  # Update every 5 seconds
                 
-            except:
+            except Exception:
                 time.sleep(5)
     
     def _monitor_gaming_processes(self):
         """Monitor gaming processes"""
         try:
-            # Update detected games
             self.detected_games = self._detect_running_games()
             
-            # Monitor gaming processes
             for game in self.detected_games:
-                for process_name in game['processes']:
-                    try:
-                        for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_info']):
-                            if proc.info['name'].lower() == process_name.lower():
-                                # Monitor process performance
-                                cpu_usage = proc.info['cpu_percent']
-                                memory_usage = proc.info['memory_info'].rss / (1024 * 1024)  # MB
-                                
-                                # Log performance if needed
-                                if cpu_usage > 80 or memory_usage > 1000:
-                                    print(f"High resource usage for {process_name}: CPU {cpu_usage}%, Memory {memory_usage}MB")
-                                
-                    except:
-                        continue
+                self._monitor_single_game_performance(game)
                         
-        except:
+        except Exception:
             pass
     
+    def _monitor_single_game_performance(self, game: Dict):
+        """Monitor performance of a single game's processes"""
+        for process_name in game['processes']:
+            try:
+                for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_info']):
+                    if proc.info['name'].lower() == process_name.lower():
+                        self._check_high_resource_usage(proc)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+            except Exception:
+                continue
+
+    def _check_high_resource_usage(self, proc):
+        """Check and log high resource usage for a process"""
+        cpu_usage = proc.info['cpu_percent']
+        memory_usage = proc.info['memory_info'].rss / (1024 * 1024)
+        if cpu_usage > 80 or memory_usage > 1000:
+            print(f"High resource usage for {proc.info['name']}: CPU {cpu_usage}%, Memory {memory_usage}MB")
+
     def _update_gaming_optimizations(self):
         """Update gaming optimizations based on current state"""
         try:
-            # Update optimizations based on detected games
             for game in self.detected_games:
-                # Update game-specific optimizations
                 self._apply_game_specific_optimizations(game)
-                
-        except:
+        except Exception:
             pass
     
     def stop_gaming_optimization(self):

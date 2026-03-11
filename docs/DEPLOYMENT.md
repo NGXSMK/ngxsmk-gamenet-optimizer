@@ -16,15 +16,15 @@ git add .
 
 ### 3. Create Initial Commit
 ```bash
-git commit -m "Initial commit: NGXSMK GameNet Optimizer v1.0.0"
+git commit -m "NGXSMK GameNet Optimizer v2.0.0"
 ```
 
 ### 4. Add Remote Repository
 ```bash
-git remote add origin https://github.com/toozuuu/ngxsmk-gamenet-optimizer.git
+git remote add origin https://github.com/NGXSMK/ngxsmk-gamenet-optimizer.git
 ```
 
-**Note**: Your repository is already set up at [https://github.com/toozuuu/ngxsmk-gamenet-optimizer](https://github.com/toozuuu/ngxsmk-gamenet-optimizer)
+**Note**: Your repository is already set up at [https://github.com/NGXSMK/ngxsmk-gamenet-optimizer](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer)
 
 ### 5. Push to GitHub
 ```bash
@@ -69,7 +69,7 @@ ngxsmk-gamenet-optimizer/
 ## 🔧 Repository Configuration
 
 ### GitHub Repository Settings
-1. Go to your repository: https://github.com/toozuuu/ngxsmk-gamenet-optimizer
+1. Go to your repository: https://github.com/NGXSMK/ngxsmk-gamenet-optimizer
 2. Go to **Settings** → **General**
 3. Add description: "A comprehensive, open-source network and system optimization tool for gamers"
 4. Add topics: `gaming`, `optimization`, `network`, `performance`, `fps`, `open-source`
@@ -96,15 +96,15 @@ ngxsmk-gamenet-optimizer/
 
 ### 1. Create First Release
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v2.0.0
+git push origin v2.0.0
 ```
 
 ### 2. Create GitHub Release
 1. Go to **Releases** in your repository
 2. Click **Create a new release**
-3. Tag: `v1.0.0`
-4. Title: `NGXSMK GameNet Optimizer v1.0.0`
+3. Tag: `v2.0.0`
+4. Title: `NGXSMK GameNet Optimizer v2.0.0`
 5. Description: Copy from CHANGELOG.md
 6. Upload any additional files if needed
 
@@ -117,16 +117,16 @@ git push origin v1.0.0
 ### 4. Add Repository Badges
 Update README.md with actual badges:
 ```markdown
-[![GitHub release](https://img.shields.io/github/release/toozuuu/ngxsmk-gamenet-optimizer.svg)](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/releases)
-[![GitHub stars](https://img.shields.io/github/stars/toozuuu/ngxsmk-gamenet-optimizer.svg)](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/toozuuu/ngxsmk-gamenet-optimizer.svg)](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/network)
+[![GitHub release](https://img.shields.io/github/release/NGXSMK/ngxsmk-gamenet-optimizer.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
+[![GitHub stars](https://img.shields.io/github/stars/NGXSMK/ngxsmk-gamenet-optimizer.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/NGXSMK/ngxsmk-gamenet-optimizer.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/network)
 ```
 
 ## 🚀 Installation Instructions for Users
 
 ### Quick Install
 ```bash
-git clone https://github.com/toozuuu/ngxsmk-gamenet-optimizer.git
+git clone https://github.com/NGXSMK/ngxsmk-gamenet-optimizer.git
 cd ngxsmk-gamenet-optimizer
 pip install -r requirements.txt
 python launcher.py
@@ -175,4 +175,4 @@ Your repository will be successful when you have:
 
 **Your NGXSMK GameNet Optimizer is now ready for the open source community!** 🚀
 
-Repository: https://github.com/toozuuu/ngxsmk-gamenet-optimizer
+Repository: https://github.com/NGXSMK/ngxsmk-gamenet-optimizer

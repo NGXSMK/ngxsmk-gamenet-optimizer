@@ -262,10 +262,10 @@ class NetworkOptimizer:
             optimizations = []
             
             if platform.system() == "Windows":
-                # Disable Nagle's algorithm for gaming
+                # Disable Nagle's algorithm for gaming (reduces latency)
                 optimizations.append("Disabling Nagle's algorithm for gaming")
-                subprocess.run(["netsh", "int", "tcp", "set", "global", "nagle=enabled"], 
-                             capture_output=True, check=True)
+                subprocess.run(["netsh", "int", "tcp", "set", "global", "nagle=disabled"], 
+                             capture_output=True, check=False)
                 
                 # Optimize TCP timestamps
                 optimizations.append("Optimizing TCP timestamps")
@@ -518,31 +518,28 @@ class NetworkOptimizer:
         try:
             self.optimization_thread = threading.Thread(target=self._traffic_monitoring_loop, daemon=True)
             self.optimization_thread.start()
-        except:
-            pass
+        except Exception as e:
+            print(f"Traffic monitoring thread error: {e}")
     
     def _traffic_monitoring_loop(self):
         """Traffic monitoring loop"""
         while self.is_optimizing:
             try:
-                # Monitor network traffic
-                network_io = psutil.net_io_counters()
-                
-                # Update traffic rules based on current usage
-                self._update_traffic_rules(network_io)
+                # Monitor network traffic and update traffic rules
+                self._update_traffic_rules()
                 
                 time.sleep(10)  # Update every 10 seconds
                 
-            except:
+            except Exception:
                 time.sleep(10)
     
-    def _update_traffic_rules(self, network_io):
+    def _update_traffic_rules(self):
         """Update traffic rules based on current usage"""
         try:
             # This would involve updating QoS rules based on current traffic
             # Implementation would depend on the specific network setup
             pass
-        except:
+        except Exception:
             pass
     
     def stop_network_optimization(self):
@@ -590,7 +587,7 @@ class NetworkOptimizer:
                     socket.create_connection((server, 53), timeout=5)
                     latency = (time.time() - start_time) * 1000
                     results[server] = {'latency_ms': latency, 'status': 'success'}
-                except:
+                except Exception:
                     results[server] = {'latency_ms': 0, 'status': 'failed'}
             
             return {

@@ -113,113 +113,129 @@ class RAMCleaner:
     def _clean_windows_cache(self) -> Dict[str, bool]:
         """Clean Windows system cache"""
         results = {}
-        
         try:
             # Clear Windows file system cache
             if self.kernel32:
-                # Set process working set to minimum
                 process_handle = self.kernel32.GetCurrentProcess()
                 self.kernel32.SetProcessWorkingSetSize(process_handle, -1, -1)
                 results['working_set'] = True
             
             # Clear DNS cache
-            try:
-                subprocess.run(['ipconfig', '/flushdns'], 
-                             capture_output=True, check=True)
-                results['dns_cache'] = True
-            except subprocess.CalledProcessError:
-                results['dns_cache'] = False
+            results['dns_cache'] = self._flush_windows_dns()
             
             # Clear Windows temp files
-            try:
-                temp_dirs = [
-                    os.environ.get('TEMP', ''),
-                    os.environ.get('TMP', ''),
-                    os.path.join(os.environ.get('WINDIR', ''), 'Temp')
-                ]
-                
-                temp_files_cleaned = 0
-                for temp_dir in temp_dirs:
-                    if temp_dir and os.path.exists(temp_dir):
-                        for file in os.listdir(temp_dir):
-                            try:
-                                file_path = os.path.join(temp_dir, file)
-                                if os.path.isfile(file_path):
-                                    os.remove(file_path)
-                                    temp_files_cleaned += 1
-                            except (OSError, PermissionError):
-                                continue
-                
-                results['temp_files'] = temp_files_cleaned > 0
-                print(f"Cleaned {temp_files_cleaned} temp files")
-            except Exception:
-                results['temp_files'] = False
+            results['temp_files'] = self._clear_windows_temp_files()
             
             # Clear Windows memory cache using PowerShell
-            try:
-                # Run memory cleanup command
-                subprocess.run([
-                    'powershell', '-Command',
-                    '[System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers(); [System.GC]::Collect()'
-                ], capture_output=True, check=True)
-                results['powershell_cleanup'] = True
-            except subprocess.CalledProcessError:
-                results['powershell_cleanup'] = False
+            results['powershell_cleanup'] = self._run_powershell_gc()
             
             # Clear Windows standby memory
-            try:
-                subprocess.run([
-                    'powershell', '-Command',
-                    'Clear-RecycleBin -Force -ErrorAction SilentlyContinue'
-                ], capture_output=True, check=False)
-                results['recycle_bin'] = True
-            except Exception:
-                results['recycle_bin'] = False
+            results['recycle_bin'] = self._clear_recycle_bin()
             
         except Exception:
             results['error'] = True
-        
         return results
+
+    def _flush_windows_dns(self) -> bool:
+        """Flush Windows DNS cache"""
+        try:
+            subprocess.run(['ipconfig', '/flushdns'], capture_output=True, check=True)
+            return True
+        except Exception:
+            return False
+
+    def _clear_windows_temp_files(self) -> bool:
+        """Clear Windows temporary files"""
+        try:
+            temp_dirs = [
+                os.environ.get('TEMP', ''),
+                os.environ.get('TMP', ''),
+                os.path.join(os.environ.get('WINDIR', ''), 'Temp')
+            ]
+            cleaned = 0
+            for temp_dir in temp_dirs:
+                if not (temp_dir and os.path.exists(temp_dir)):
+                    continue
+                for file in os.listdir(temp_dir):
+                    try:
+                        file_path = os.path.join(temp_dir, file)
+                        if os.path.isfile(file_path):
+                            os.remove(file_path)
+                            cleaned += 1
+                    except OSError:
+                        continue
+            return cleaned > 0
+        except Exception:
+            return False
+
+    def _run_powershell_gc(self) -> bool:
+        """Run .NET Garbage Collector via PowerShell"""
+        try:
+            subprocess.run([
+                'powershell', '-Command',
+                '[System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers(); [System.GC]::Collect()'
+            ], capture_output=True, check=True)
+            return True
+        except Exception:
+            return False
+
+    def _clear_recycle_bin(self) -> bool:
+        """Clear the Recycle Bin"""
+        try:
+            subprocess.run([
+                'powershell', '-Command',
+                'Clear-RecycleBin -Force -ErrorAction SilentlyContinue'
+            ], capture_output=True, check=False)
+            return True
+        except Exception:
+            return False
     
     def _clean_unix_cache(self) -> Dict[str, bool]:
         """Clean Unix/Linux system cache"""
         results = {}
-        
         try:
             # Clear page cache, dentries and inodes
-            try:
-                subprocess.run(['sync'], check=True)
-                with open('/proc/sys/vm/drop_caches', 'w') as f:
-                    f.write('3')  # Clear page cache, dentries and inodes
-                results['system_cache'] = True
-            except (subprocess.CalledProcessError, PermissionError):
-                results['system_cache'] = False
+            results['system_cache'] = self._clear_unix_system_cache_internal()
             
             # Clear user cache
-            try:
-                cache_dirs = [
-                    os.path.expanduser('~/.cache'),
-                    '/tmp',
-                    '/var/tmp'
-                ]
-                
-                for cache_dir in cache_dirs:
-                    if os.path.exists(cache_dir):
-                        for root, dirs, files in os.walk(cache_dir):
-                            for file in files:
-                                try:
-                                    os.remove(os.path.join(root, file))
-                                except (OSError, PermissionError):
-                                    continue
-                
-                results['user_cache'] = True
-            except Exception:
-                results['user_cache'] = False
+            results['user_cache'] = self._clear_unix_user_cache_internal()
             
         except Exception:
             results['error'] = True
-        
         return results
+
+    def _clear_unix_system_cache_internal(self) -> bool:
+        """Internal helper for clearing Unix system cache"""
+        try:
+            subprocess.run(['sync'], check=True)
+            with open('/proc/sys/vm/drop_caches', 'w') as f:
+                f.write('3')
+            return True
+        except Exception:
+            return False
+
+    def _clear_unix_user_cache_internal(self) -> bool:
+        """Internal helper for clearing Unix user cache"""
+        try:
+            cache_dirs = [
+                os.path.expanduser('~/.cache'),
+                '/tmp',
+                '/var/tmp'
+            ]
+            cleaned = False
+            for cache_dir in cache_dirs:
+                if not os.path.exists(cache_dir):
+                    continue
+                for root, _, files in os.walk(cache_dir):
+                    for file in files:
+                        try:
+                            os.remove(os.path.join(root, file))
+                            cleaned = True
+                        except OSError:
+                            continue
+            return cleaned
+        except Exception:
+            return False
     
     def optimize_memory_allocation(self) -> Dict[str, bool]:
         """Optimize memory allocation"""
@@ -310,28 +326,19 @@ class RAMCleaner:
     def clean_memory(self) -> float:
         """Main memory cleaning function - returns freed memory in MB"""
         try:
-            print("RAM cleaning started...")  # Debug print
-            
             # Get initial memory in MB
             initial_memory = psutil.virtual_memory()
             initial_used_mb = initial_memory.used / (1024**2)  # Convert to MB
-            print(f"Initial memory usage: {initial_used_mb:.2f} MB")  # Debug print
             
             # Clean system cache
-            print("Cleaning system cache...")  # Debug print
             cache_results = self.clean_system_cache()
-            print(f"Cache cleaning results: {cache_results}")  # Debug print
             
             # Optimize memory allocation
-            print("Optimizing memory allocation...")  # Debug print
             optimization_results = self.optimize_memory_allocation()
-            print(f"Memory optimization results: {optimization_results}")  # Debug print
             
             # Force garbage collection multiple times for better results
-            print("Running garbage collection...")  # Debug print
-            for i in range(3):
-                collected = gc.collect()
-                print(f"GC cycle {i+1}: collected {collected} objects")  # Debug print
+            for _ in range(3):
+                gc.collect()
             
             # Wait a moment for memory to be freed
             time.sleep(0.5)
@@ -339,30 +346,22 @@ class RAMCleaner:
             # Get final memory in MB
             final_memory = psutil.virtual_memory()
             final_used_mb = final_memory.used / (1024**2)  # Convert to MB
-            print(f"Final memory usage: {final_used_mb:.2f} MB")  # Debug print
             
             # Calculate freed memory in MB
             freed_memory_mb = initial_used_mb - final_used_mb
-            print(f"Memory freed: {freed_memory_mb:.2f} MB")  # Debug print
             
             # If no memory was freed, try more aggressive cleaning
             if freed_memory_mb <= 0:
-                print("No memory freed, trying aggressive cleaning...")  # Debug print
-                # Try to free more memory by clearing Python caches
                 import sys
                 if hasattr(sys, '_clear_type_cache'):
                     sys._clear_type_cache()
-                    print("Cleared Python type cache")  # Debug print
                 
-                # Force another garbage collection
                 gc.collect()
                 time.sleep(0.2)
                 
-                # Recalculate
                 final_memory = psutil.virtual_memory()
                 final_used_mb = final_memory.used / (1024**2)
                 freed_memory_mb = initial_used_mb - final_used_mb
-                print(f"After aggressive cleaning: {freed_memory_mb:.2f} MB freed")  # Debug print
             
             # Update memory history
             self.memory_history.append({
@@ -372,16 +371,13 @@ class RAMCleaner:
                 'optimization_applied': optimization_results
             })
             
-            print(f"RAM cleaning completed successfully, freed: {freed_memory_mb:.2f} MB")  # Debug print
-            
             # Return freed memory in MB, minimum 0
             return max(0, freed_memory_mb)
             
         except Exception as e:
             print(f"RAM cleaning error: {e}")
-            import traceback
-            traceback.print_exc()  # Print full traceback for debugging
             return 0.0
+
     
     def start_auto_cleanup(self, interval: int = 300):  # 5 minutes
         """Start automatic memory cleanup"""
@@ -478,22 +474,9 @@ class RAMCleaner:
         }
         
         try:
-            # Close unnecessary processes
-            unnecessary_processes = [
-                'chrome.exe', 'firefox.exe', 'edge.exe', 'safari.exe',  # Browsers
-                'spotify.exe', 'vlc.exe', 'media',  # Media players
-                'skype.exe', 'discord.exe', 'teams.exe',  # Communication (optional)
-                'update.exe', 'updater.exe', 'installer.exe'  # Updates
-            ]
-            
-            for proc in psutil.process_iter(['pid', 'name']):
-                try:
-                    proc_name = proc.info['name'].lower()
-                    if any(unnecessary in proc_name for unnecessary in unnecessary_processes):
-                        proc.terminate()
-                        results['processes_optimized'] += 1
-                except (psutil.NoSuchProcess, psutil.AccessDenied):
-                    continue
+            # Note: We do NOT automatically terminate user processes.
+            # Doing so without explicit confirmation is disruptive.
+            # Memory cleanup and priority boosting are performed instead.
             
             # Clean memory
             results['memory_freed'] = self.clean_memory()

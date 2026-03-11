@@ -5,7 +5,7 @@ Thank you for your interest in contributing to GameNet Optimizer! This document 
 ## 🤝 How to Contribute
 
 ### Reporting Issues
-- Use the [Issues](https://github.com/yourusername/gamenet-optimizer/issues) page
+- Use the [Issues](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/issues) page
 - Provide detailed information about the problem
 - Include system information and steps to reproduce
 - Use appropriate labels (bug, enhancement, question)
@@ -17,7 +17,7 @@ Thank you for your interest in contributing to GameNet Optimizer! This document 
 - Consider implementation complexity
 
 ### Code Contributions
-1. Fork the [repository](https://github.com/toozuuu/ngxsmk-gamenet-optimizer)
+1. Fork the [repository](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer)
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
 4. Add tests if applicable
@@ -60,7 +60,7 @@ Thank you for your interest in contributing to GameNet Optimizer! This document 
 4. Run the application
 
 ```bash
-git clone https://github.com/yourusername/gamenet-optimizer.git
+git clone https://github.com/NGXSMK/ngxsmk-gamenet-optimizer.git
 cd gamenet-optimizer
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
@@ -188,7 +188,7 @@ When suggesting features:
 - **Issues**: For bug reports and feature requests
 - **Wiki**: For detailed documentation
 - **Email**: sachindilshan040@gmail.com
-- **Maintainer**: @toozuuu
+- **Maintainer**: @NGXSMK
 
 ## 🎉 Recognition
 

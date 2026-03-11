@@ -99,8 +99,8 @@ def build_executable():
     
     try:
         # Use the existing build script
-        result = subprocess.run([sys.executable, "build_simple_advanced.py"], 
-                              capture_output=True, text=True, check=True)
+        subprocess.run([sys.executable, "build_simple_advanced.py"], 
+                       capture_output=True, text=True, check=True)
         print("✅ Executable built successfully")
         return True
     except subprocess.CalledProcessError as e:
@@ -161,9 +161,9 @@ def create_build_info():
 - Real-time Performance Tracking
 
 ## Support
-- **GitHub**: https://github.com/toozuuu/ngxsmk-gamenet-optimizer
+- **GitHub**: https://github.com/NGXSMK/ngxsmk-gamenet-optimizer
 - **Email**: sachindilshan040@gmail.com
-- **Maintainer**: @toozuuu
+- **Maintainer**: @NGXSMK
 
 ---
 **Made with ❤️ for the gaming community**
@@ -207,9 +207,9 @@ def main():
     print("\n" + "=" * 60)
     print("🎉 BUILD COMPLETED SUCCESSFULLY!")
     print("=" * 60)
-    print(f"📁 Executable: dist/NGXSMK_GameNet_Optimizer_Advanced.exe")
+    print("📁 Executable: dist/NGXSMK_GameNet_Optimizer_Advanced.exe")
     print(f"📊 Size: {os.path.getsize('dist/NGXSMK_GameNet_Optimizer_Advanced.exe') / (1024*1024):.1f} MB")
-    print(f"📝 Build Info: BUILD_INFO.md")
+    print("📝 Build Info: BUILD_INFO.md")
     print("\n🚀 Ready to optimize your gaming experience!")
     print("=" * 60)
     

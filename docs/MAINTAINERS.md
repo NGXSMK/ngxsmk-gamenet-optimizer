@@ -2,16 +2,16 @@
 
 ## Project Maintainer
 
-**Name**: toozuuu  
-**GitHub**: [@toozuuu](https://github.com/toozuuu)  
+**Name**: NGXSMK  
+**GitHub**: [@NGXSMK](https://github.com/NGXSMK)  
 **Email**: sachindilshan040@gmail.com  
 **Role**: Project Creator & Lead Maintainer  
 
 ## Repository Information
 
-- **Repository**: [https://github.com/toozuuu/ngxsmk-gamenet-optimizer](https://github.com/toozuuu/ngxsmk-gamenet-optimizer)
-- **Issues**: [https://github.com/toozuuu/ngxsmk-gamenet-optimizer/issues](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/issues)
-- **Discussions**: [https://github.com/toozuuu/ngxsmk-gamenet-optimizer/discussions](https://github.com/toozuuu/ngxsmk-gamenet-optimizer/discussions)
+- **Repository**: [https://github.com/NGXSMK/ngxsmk-gamenet-optimizer](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer)
+- **Issues**: [https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/issues](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/issues)
+- **Discussions**: [https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/discussions](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/discussions)
 
 ## Contact Information
 

@@ -52,7 +52,6 @@ class FPSBoost:
             if self.system == "Windows":
                 # Use all available cores
                 cpu_count = psutil.cpu_count()
-                affinity_mask = (1 << cpu_count) - 1
                 process.cpu_affinity(list(range(cpu_count)))
             return True
         except (psutil.AccessDenied, psutil.NoSuchProcess):
@@ -134,10 +133,9 @@ class FPSBoost:
             
             for process in game_processes:
                 try:
-                    if priority_boost:
-                        if self.set_high_priority(process):
-                            self.optimized_processes.append(process.pid)
-                            results['processes_optimized'] += 1
+                    if priority_boost and self.set_high_priority(process):
+                        self.optimized_processes.append(process.pid)
+                        results['processes_optimized'] += 1
                     
                     if cpu_optimization:
                         self.optimize_cpu_affinity(process)
