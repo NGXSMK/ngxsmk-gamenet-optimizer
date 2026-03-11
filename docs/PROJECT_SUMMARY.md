@@ -29,40 +29,30 @@
 
 ## 📁 Project Structure
 
-```
-gamenet-optimizer/
-├── main.py                 # Main application entry point
-├── launcher.py            # Application launcher with dependency checking
-├── requirements.txt       # Python dependencies
-├── setup.py              # Package installation script
-├── modules/              # Core optimization modules
-│   ├── fps_boost.py      # FPS optimization
-│   ├── network_analyzer.py # Network analysis
-│   ├── multi_internet.py  # Multi-connection management
-│   ├── traffic_shaper.py  # Traffic shaping
-│   ├── ram_cleaner.py    # Memory optimization
-│   ├── lol_optimizer.py  # League of Legends specific
-│   └── config_manager.py # Configuration management
-├── test_lol_servers.py   # LoL server testing utility
-├── install_simple.py     # Simple installer script
-├── run.bat               # Windows launcher
-├── run.sh                # Linux/Mac launcher
-├── README.md             # Comprehensive documentation
-├── CONTRIBUTING.md       # Contribution guidelines
-├── CODE_OF_CONDUCT.md    # Community code of conduct
-├── CHANGELOG.md          # Version history
-├── LICENSE               # MIT license
-└── .gitignore           # Git ignore rules
-```
+ngxsmk-neural-optimizer/
+├── src/ngx_optimizer/      # Core Optimization Engines
+│   ├── modules/            # Legacy individual modules
+│   └── api.py              # NEW: Flask bridge API
+├── web-ui/                 # NEW: Neural Dashboard (React)
+│   ├── src/App.jsx         # UI Logic & Components
+│   └── electron-main.cjs   # Desktop Shell wrapper
+├── run.py                  # Legacy GUI Entry
+└── run_neural.bat          # NEW: One-click launcher (Full Stack)
+
 
 ## 🛠️ Technology Stack
 
-- **Language**: Python 3.7+
-- **GUI Framework**: Tkinter
-- **System Monitoring**: psutil
-- **Network Analysis**: ping3, speedtest-cli
-- **Cross-platform**: Windows, Linux support
-- **Architecture**: Modular, object-oriented design
+### Backend Engine
+- **Language**: Python 3.13+
+- **System Monitoring**: `psutil`
+- **Networking**: `ping3`, `speedtest-cli`
+- **Web Bridge**: `Flask` + `Flask-CORS`
+
+### Frontend Dashboard
+- **Framework**: `React 18` (Vite)
+- **Desktop Shell**: `Electron`
+- **Visualization**: `Recharts`
+- **Styling**: Vanilla CSS (Premium Glassmorphism)
 
 ## 🎮 Target Audience
 

@@ -5,7 +5,20 @@ All notable changes to GameNet Optimizer will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2026-03-11
+## [2.2.6] - 2026-03-11
+
+### Added
+- **Neural UI Redesign**: Launched a completely new dashboard built with React 18, featuring a premium "Neural" aesthetic.
+- **Electron Integration**: The application can now run as a standalone Windows desktop app with a custom frameless window.
+- **Full-Stack Web Bridge**: Created a Flask-based API (`api.py`) to connect the React UI with legacy Python optimization modules.
+- **Real-Time Telemetry**: Integrated animated Recharts for live-tracking of CPU, RAM, and Network performance.
+- **Stand-alone Packaging**: Added `electron-builder` support for creating portable `.exe` distributions.
+
+### Fixed
+- **Prop Validation**: Resolved linting warnings across the React component tree.
+- **Accessibility**: Replaced non-semantic interactive elements with native buttons for better screen reader and keyboard support.
+
+## [2.1.0] - 2026-03-11
 
 ### Added
 - **Premium UI Overhaul**: Implemented a state-of-the-art dark theme with vibrant accents and modern typography.

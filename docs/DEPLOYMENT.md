@@ -47,23 +47,21 @@ ngxsmk-gamenet-optimizer/
 ├── test_lol_servers.py   # LoL server testing
 ├── run.bat               # Windows launcher
 ├── run.sh                # Linux/Mac launcher
-├── modules/              # Core optimization modules
-│   ├── __init__.py
-│   ├── fps_boost.py
-│   ├── network_analyzer.py
-│   ├── multi_internet.py
-│   ├── traffic_shaper.py
-│   ├── ram_cleaner.py
-│   ├── lol_optimizer.py
-│   └── config_manager.py
-├── README.md             # Project documentation
-├── CONTRIBUTING.md       # Contribution guidelines
-├── CODE_OF_CONDUCT.md    # Code of conduct
-├── CHANGELOG.md          # Version history
-├── LICENSE               # MIT license
-├── PROJECT_SUMMARY.md    # Project overview
-├── DEPLOYMENT.md         # This file
-└── .gitignore           # Git ignore rules
+├── src/ngx_optimizer/      # Core optimization modules
+│   ├── api.py              # Flask Bridge API
+│   └── modules/            # Engine files
+├── web-ui/                 # Neural Dashboard (React)
+│   ├── src/                # Frontend source
+│   └── electron-main.cjs   # Desktop wrapper
+├── README.md               # Project documentation
+├── CONTRIBUTING.md         # Contribution guidelines
+├── CODE_OF_CONDUCT.md      # Code of conduct
+├── CHANGELOG.md            # Version history
+├── LICENSE                 # MIT license
+├── PROJECT_SUMMARY.md      # Project overview
+├── DEPLOYMENT.md           # This file
+└── .gitignore              # Git ignore rules
+
 ```
 
 ## 🔧 Repository Configuration

@@ -13,7 +13,7 @@ from pathlib import Path
 def install_pyinstaller():
     """Install PyInstaller if not already installed"""
     try:
-        import PyInstaller
+        import PyInstaller # type: ignore
         print("✅ PyInstaller is already installed")
         return True
     except ImportError:

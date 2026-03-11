@@ -31,7 +31,7 @@ def check_requirements():
     
     # Check if PyInstaller is available
     try:
-        import PyInstaller
+        import PyInstaller # type: ignore
         print(f"✅ PyInstaller {PyInstaller.__version__} available")
     except ImportError:
         print("❌ PyInstaller not found. Installing...")

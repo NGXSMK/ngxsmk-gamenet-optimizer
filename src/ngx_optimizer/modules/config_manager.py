@@ -6,11 +6,15 @@ Handles application settings and configuration
 import json
 import os
 import time
-from typing import Dict, Any, Optional
+from itertools import islice
+from typing import Dict, List, Any, Optional
 import threading
+from .compat import get_logger # type: ignore
+
+logger = get_logger("config_manager")
 
 class ConfigManager:
-    def __init__(self, config_file: str = None):
+    def __init__(self, config_file: Optional[str] = None):
         if config_file is None:
             # Store config next to the project root, not CWD
             project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +35,7 @@ class ConfigManager:
                 self.config = self._get_default_config()
                 self.save_settings(self.config)
         except Exception as e:
-            print(f"Failed to load settings: {e}")
+            logger.error("Failed to load settings: %s", e)
             self.config = self._get_default_config()
         
         return self.config
@@ -47,14 +51,15 @@ class ConfigManager:
                 
                 return True
         except Exception as e:
-            print(f"Failed to save settings: {e}")
+            logger.error("Failed to save settings: %s", e)
             return False
     
     def get_setting(self, key: str, default: Any = None) -> Any:
         """Get a specific setting value"""
         try:
             return self.config.get(key, default)
-        except Exception:
+        except Exception as e:
+            logger.debug("Config read failed for %s: %s", key, e)
             return default
     
     def set_setting(self, key: str, value: Any) -> bool:
@@ -63,7 +68,8 @@ class ConfigManager:
             with self.lock:
                 self.config[key] = value
                 return self.save_settings({})
-        except Exception:
+        except Exception as e:
+            logger.debug("Config set failed for %s: %s", key, e)
             return False
     
     def _get_default_config(self) -> Dict[str, Any]:
@@ -268,17 +274,18 @@ class ConfigManager:
         except Exception:
             return False
     
-    def get_recent_backups(self) -> list:
+    def get_recent_backups(self) -> List[str]:
         """Get list of recent configuration backups"""
         try:
-            backup_files = []
+            backup_files: List[str] = []
             for file in os.listdir("."):
                 if file.startswith("config_backup_") and file.endswith(".json"):
                     backup_files.append(file)
             
             # Sort by modification time (newest first)
             backup_files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
-            return backup_files[:10]  # Last 10 backups
+            res: List[str] = list(islice(backup_files, 10))  # Last 10 backups
+            return res
         except Exception:
             return []
     
@@ -288,7 +295,8 @@ class ConfigManager:
             backup_files = self.get_recent_backups()
             
             # Remove old backups
-            for backup_file in backup_files[keep_count:]:
+            old_backups: List[str] = list(islice(backup_files, keep_count, None))
+            for backup_file in old_backups:
                 try:
                     os.remove(backup_file)
                 except OSError:

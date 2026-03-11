@@ -1,0 +1,13 @@
+directories:
+  output: dist_electron
+  buildResources: build
+appId: com.ngxsmk.optimizer
+productName: NGXSMK Neural Optimizer
+files:
+  - filter:
+      - dist/**/*
+      - electron-main.cjs
+win:
+  target: portable
+  icon: public/vite.svg
+electronVersion: 41.0.0

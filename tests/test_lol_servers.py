@@ -1,17 +1,12 @@
-#!/usr/bin/env python3
-"""
-Test script for League of Legends server latency
-Tests all major LoL servers including Singapore
-"""
-
 import sys
 import os
 
-# Add modules to path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Add project root to path
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(PROJECT_ROOT, "src"))
 
 try:
-    from modules.lol_optimizer import LoLOptimizer
+    from ngx_optimizer.modules.lol_optimizer import LoLOptimizer # type: ignore
     
     def test_lol_servers():
         """Test League of Legends server latency"""
@@ -28,31 +23,23 @@ try:
         
         for region, latency in latencies.items():
             if latency < 999:
-                status = "✅ Good" if latency < 50 else "⚠️  Fair" if latency < 100 else "❌ Poor"
+                if latency < 50:
+                    status = "✅ Good"
+                elif latency < 100:
+                    status = "⚠️  Fair"
+                else:
+                    status = "❌ Poor"
                 print(f"{region:4}: {latency:6.1f}ms {status}")
             else:
                 print(f"{region:4}: {'Unable to reach':>15} ❌")
-        
-        # Find best server
-        best_server = lol_optimizer.get_best_lol_server()
-        print(f"\n🏆 Best Server: {best_server}")
         
         # Performance metrics
         print("\n📈 LoL Performance Metrics:")
         print("-" * 30)
         metrics = lol_optimizer.get_lol_performance_metrics()
-        print(f"Processes Running: {metrics['processes_running']}")
-        print(f"Memory Usage: {metrics['total_memory_mb']:.1f} MB")
-        print(f"CPU Usage: {metrics['cpu_usage']:.1f}%")
-        print(f"Network Connections: {metrics['network_connections']}")
+        print(f"Processes Running: {metrics['running']}")
+        print(f"Memory Usage: {metrics['mem_mb']:.1f} MB")
         
-        # Recommendations
-        print("\n💡 Recommendations:")
-        print("-" * 30)
-        recommendations = lol_optimizer.get_lol_optimization_recommendations()
-        for i, rec in enumerate(recommendations[:5], 1):
-            print(f"{i}. {rec}")
-    
     if __name__ == "__main__":
         test_lol_servers()
         

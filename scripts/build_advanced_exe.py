@@ -86,7 +86,7 @@ def build_advanced_executable():
     
     # Check if PyInstaller is installed
     try:
-        import PyInstaller
+        import PyInstaller # type: ignore
         print(f"✅ PyInstaller found: {PyInstaller.__version__}")
     except ImportError:
         print("❌ PyInstaller not found. Installing...")

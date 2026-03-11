@@ -6,3 +6,4 @@ matplotlib>=3.8.0
 numpy>=1.26.0
 netifaces>=0.11.0
 requests>=2.31.0
+customtkinter>=5.2.0

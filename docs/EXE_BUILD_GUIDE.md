@@ -14,10 +14,17 @@ build_exe.bat
 python build_exe_simple.py
 ```
 
-### Method 3: Advanced Build
+### Method 3: Advanced Build (Legacy GUI)
 ```bash
 python build_exe.py
 ```
+
+### Method 4: Standalone Neural Dashboard (Electron)
+```bash
+cd web-ui
+npm run electron:build
+```
+
 
 ## 📋 Prerequisites
 

@@ -1,16 +1,13 @@
-# NGXSMK GameNet Optimizer
+# NGXSMK Neural Optimizer
 
-[![Version](https://img.shields.io/badge/Version-2.0.0-blue.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
+[![Version](https://img.shields.io/badge/Version-2.2.6-blue.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
 [![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://python.org)
+[![React](https://img.shields.io/badge/UI-React%2018-61dafb.svg)](https://reactjs.org/)
+[![Electron](https://img.shields.io/badge/Desktop-Electron-47848f.svg)](https://www.electronjs.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Open Source](https://img.shields.io/badge/Open%20Source-Yes-brightgreen.svg)](https://github.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-lightgrey.svg)](https://github.com)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/actions)
-[![GitHub stars](https://img.shields.io/github/stars/NGXSMK/ngxsmk-gamenet-optimizer.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/NGXSMK/ngxsmk-gamenet-optimizer.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/network)
-[![Downloads](https://img.shields.io/badge/Downloads-Latest-blue.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
-[![UI](https://img.shields.io/badge/UI-Modern%20Dark%20Theme-00ff88.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer)
-[![Performance](https://img.shields.io/badge/Performance-Optimized%20for%20All%20PCs-00d4ff.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer)
+
 
 > **A powerful, open-source gaming optimization suite with modern UI that enhances your gaming experience through advanced network optimization, system tuning, and real-time performance monitoring.**
 
@@ -18,9 +15,9 @@
 
 ### Download Pre-built Executable (Recommended)
 1. **Download** the latest release from [Releases](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
-2. **Extract** the executable from the zip file
-3. **Run** `NGXSMK_GameNet_Optimizer_Advanced.exe`
-4. **Enjoy** optimized gaming performance!
+2. **Extract** the zip file
+3. **Run** `NGXSMK Neural Optimizer.exe` (The new Electron-based Neural Dashboard)
+4. **Enjoy** vectorized, low-latency gaming!
 
 ### Build from Source
 ```bash
@@ -31,33 +28,40 @@ cd ngxsmk-gamenet-optimizer
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the application
-python run.py
+# Run the Neural Backend
+python src/ngx_optimizer/api.py
+
+# Run the UI (Dev Mode)
+cd web-ui
+npm run dev
 ```
 
 ## ✨ What is NGXSMK GameNet Optimizer?
 
-NGXSMK GameNet Optimizer is a comprehensive, open-source gaming optimization tool with a modern dark theme UI designed to enhance your gaming experience through intelligent system and network optimization. Unlike commercial alternatives, it's completely free, open-source, and respects your privacy.
+NGXSMK GameNet Optimizer is a comprehensive, open-source gaming optimization tool with a modern dark theme UI designed to enhance your gaming experience. The architecture features a **Python 3.13 Core** engine serving a high-performance **React 19 Dashboard** via a bi-directional Neural Link API.
 
 ### 🎯 Key Benefits
 
 - **🚀 Boost FPS** - Optimize system performance for higher frame rates
 - **🌐 Reduce Latency** - Advanced network optimization for lower ping
-- **🧹 Clean Memory** - Intelligent RAM management and cleanup
+- **🧠 Neural Dashboard** - Next-gen React/Electron UI with real-time telemetry
+- **🍞 Toast Notification System** - Instant visual feedback for all neural tasks
+- **🥇 Stability Elite Ranking** - AI-driven system health scoring and predictive bottlenecking
+- **🧹 Clean Memory** - Intelligent RAM management via `RAMCleaner.py`
 - **⚡ Smart Traffic** - Prioritize gaming traffic over background apps
 - **🎮 Game-Specific** - Tailored optimizations for popular games
-- **🔒 Privacy-First** - No data collection, everything runs locally
-- **🎨 Modern UI** - Sleek dark theme with adaptive sizing for all PCs
-- **📊 Real-time Monitoring** - Live system status and performance metrics
+- **📊 Real-time Analytics** - Animated charts for live CPU/RAM monitoring
+
 
 ## 🌟 Features
 
-### 🎨 Modern UI & User Experience
-- **Adaptive Window Sizing** - Automatically adjusts for low-end and high-end PCs
-- **Modern Dark Theme** - Sleek gaming-focused interface with green accents
-- **Real-time Status Monitoring** - Live system metrics with color-coded indicators
-- **Glassmorphism Effects** - Modern semi-transparent elements for depth
-- **Responsive Design** - Optimized for all screen sizes and system capabilities
+### 🧠 Neural UI & User Experience
+- **React 18 Dashboard** - High-performance web interface built with modern hooks
+- **Electron Standalone** - Native Windows experience with frameless "Glass" design
+- **Real-time Telemetry** - Animated `recharts` integration for live performance tracking
+- **Glassmorphism 2.0** - Premium semi-transparent visuals with glowing mint/cyan accents
+- **Cross-Process Bridge** - Seamless integration between React UI and Python backend logic
+
 
 ### 🎮 FPS Boost & Game Optimization
 - **Intelligent Game Detection** - Automatically detects and optimizes running games
@@ -168,22 +172,20 @@ python scripts/build_simple_advanced.py
 
 ```
 ngxsmk-gamenet-optimizer/
-├── run.py                     # Main entry point
-├── requirements.txt            # Python dependencies
-├── setup.py                    # Package installation script
-├── src/                        # Source code
-│   └── ngx_optimizer/          # Main package
-│       ├── app.py              # Main application logic
-│       ├── core_config.py      # Low-resource PC configurations
-│       └── modules/            # Core optimization modules
-│           ├── fps_boost.py
-│           ├── ... (all modules)
-├── scripts/                    # Build and installation scripts
-├── docs/                       # Project documentation and guides
-├── tests/                      # Unit and integration tests
-├── assets/                     # Application assets (icons, images)
-├── LICENSE                     # MIT License
-└── README.md                   # This file
+├── run.py                     # Legacy Python GUI entry
+├── web-ui/                    # New Neural Dashboard (React source)
+│   ├── src/App.jsx            # Main UI Logic
+│   ├── electron-main.cjs      # Desktop Shell configuration
+│   └── package.json           # UI Dependencies & Scripts
+├── src/                       # Backend Source
+│   └── ngx_optimizer/         
+│       ├── api.py             # Full-stack bridge API (Flask)
+│       └── modules/           # Core optimization engines
+├── docs/                      # Updated v2.2.6 documentation
+├── assets/                    # Shared application assets
+├── LICENSE                    # MIT License
+└── README.md                  # This file
+
 ```
 
 ## 🤝 Contributing

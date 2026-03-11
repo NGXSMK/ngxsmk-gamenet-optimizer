@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages # type: ignore
 
 setup(
     name="ngxsmk-gamenet-optimizer",
@@ -14,6 +14,7 @@ setup(
         "numpy>=1.26.0",
         "netifaces>=0.11.0",
         "requests>=2.31.0",
+        "customtkinter>=5.2.0",
     ],
     entry_points={
         "console_scripts": [
