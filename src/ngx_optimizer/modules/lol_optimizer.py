@@ -7,6 +7,8 @@ Specialized optimizations for League of Legends
 import subprocess
 import platform
 import gc
+import time
+import threading
 from typing import Dict, List, Any
 
 from .compat import get_psutil, get_logger # type: ignore
@@ -18,6 +20,11 @@ class LoLOptimizer:
     def __init__(self):
         self.system = platform.system()
         self.lol_processes = ['league of legends.exe', 'lol.exe', 'riotclient.exe', 'leagueclient.exe']
+        # Cached server latency — updated in background to avoid blocking API calls
+        self._latency_cache: Dict[str, float] = {}
+        self._latency_lock = threading.Lock()
+        # Kick off background refresh immediately
+        threading.Thread(target=self._latency_refresh_loop, daemon=True).start()
         
     def detect_lol_processes(self) -> List[Any]:
         """Detect League of Legends related processes"""
@@ -65,19 +72,36 @@ class LoLOptimizer:
             logger.debug("Failed to get lol network metrics: %s", e)
             return {'running': 0.0, 'mem_mb': 0.0}
     
-    def get_lol_server_latency(self) -> Dict[str, float]:
-        """Test latency to LoL servers"""
+    def _latency_refresh_loop(self):
+        """Refresh LoL server latency in background every 60 seconds."""
+        while True:
+            result = self._measure_server_latency()
+            with self._latency_lock:
+                self._latency_cache = result
+            time.sleep(60)
+
+    def _measure_server_latency(self) -> Dict[str, float]:
+        """Actually measure latency to LoL servers (may block up to ~3s each)."""
         servers = {'NA': '104.160.131.1', 'EUW': '104.160.141.3', 'KR': '104.160.156.1'}
         lats: Dict[str, float] = {}
         for reg, srv in servers.items():
             try:
-                cmd = ['ping', '-n' if self.system == "Windows" else '-c', '2', srv]
-                pr = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+                # Use only 1 ping packet and a shorter timeout to reduce blocking
+                cmd = ['ping', '-n' if self.system == "Windows" else '-c', '1', srv]
+                pr = subprocess.run(cmd, capture_output=True, text=True, timeout=3)
                 lats[reg] = self._parse_ping(pr.stdout) if pr.returncode == 0 else 999.0
             except Exception as e:
                 logger.debug("Latency test for %s failed: %s", reg, e)
                 lats[reg] = 999.0
         return lats
+
+    def get_lol_server_latency(self) -> Dict[str, float]:
+        """Return cached LoL server latency (non-blocking)."""
+        with self._latency_lock:
+            if self._latency_cache:
+                return dict(self._latency_cache)
+        # If cache not populated yet, return defaults (background thread will fill it)
+        return {'NA': 999.0, 'EUW': 999.0, 'KR': 999.0}
     
     def _parse_ping(self, out: str) -> float:
         """Simple ping output parser"""

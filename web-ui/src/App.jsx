@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import {
@@ -18,12 +18,34 @@ import {
   Cpu,
   ArrowRight,
   Monitor,
-  Battery
+  Battery,
+  Globe,
+  Signal,
+  Power,
+  Layers,
+  Clock,
+  FileText,
+  Library,
+  Sliders,
+  ToggleLeft,
+  ToggleRight,
+  Play,
+  RefreshCw,
+  Download,
+  Eye,
+  EyeOff,
+  Rocket,
+  Calendar
 } from 'lucide-react';
 import {
   ResponsiveContainer,
   AreaChart,
-  Area
+  Area,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
@@ -337,6 +359,60 @@ const App = () => {
   const [detectedGames, setDetectedGames] = useState([]);
   const [systemInfo, setSystemInfo] = useState(null);
   const [profiles, setProfiles] = useState([]);
+
+  // --- New feature state ---
+  const [dnsStatus, setDnsStatus] = useState(null);
+  const [pingHistory, setPingHistory] = useState({});
+  const [startupEnabled, setStartupEnabled] = useState(false);
+  const [adapterStatus, setAdapterStatus] = useState(null);
+  const [visualStatus, setVisualStatus] = useState(null);
+  const [gameLibrary, setGameLibrary] = useState({ games: [], total: 0, by_store: {} });
+  const [scheduleJobs, setScheduleJobs] = useState([]);
+  const [scheduleActions, setScheduleActions] = useState([]);
+  const [scheduleForm, setScheduleForm] = useState({ action: 'quick_optimize', hour: '20', minute: '00', repeat: true });
+  const [dnsCustomPrimary, setDnsCustomPrimary] = useState('');
+  const [dnsCustomSecondary, setDnsCustomSecondary] = useState('');
+  const [gameScanLoading, setGameScanLoading] = useState(false);
+
+  const fetchDnsStatus = useCallback(async () => {
+    try { const r = await axios.get(`${API_BASE}/dns/status`); setDnsStatus(r.data); } catch { /* silent */ }
+  }, []);
+  const fetchPingHistory = useCallback(async () => {
+    try { const r = await axios.get(`${API_BASE}/ping/history`); setPingHistory(r.data); } catch { /* silent */ }
+  }, []);
+  const fetchStartupStatus = useCallback(async () => {
+    try { const r = await axios.get(`${API_BASE}/startup/status`); setStartupEnabled(r.data.enabled || false); } catch { /* silent */ }
+  }, []);
+  const fetchAdapterStatus = useCallback(async () => {
+    try { const r = await axios.get(`${API_BASE}/adapter/status`); setAdapterStatus(r.data); } catch { /* silent */ }
+  }, []);
+  const fetchVisualStatus = useCallback(async () => {
+    try { const r = await axios.get(`${API_BASE}/visual/status`); setVisualStatus(r.data); } catch { /* silent */ }
+  }, []);
+  const fetchGameLibrary = useCallback(async () => {
+    try { const r = await axios.get(`${API_BASE}/games/library`); setGameLibrary(r.data); } catch { /* silent */ }
+  }, []);
+  const fetchSchedule = useCallback(async () => {
+    try { const r = await axios.get(`${API_BASE}/schedule/status`); setScheduleJobs(r.data.jobs || []); setScheduleActions(r.data.available_actions || []); } catch { /* silent */ }
+  }, []);
+
+  useEffect(() => {
+    fetchDnsStatus();
+    fetchStartupStatus();
+    fetchAdapterStatus();
+    fetchVisualStatus();
+    fetchGameLibrary();
+    fetchSchedule();
+  }, [fetchDnsStatus, fetchStartupStatus, fetchAdapterStatus, fetchVisualStatus, fetchGameLibrary, fetchSchedule]);
+
+  useEffect(() => {
+    if (lowPowerMode) return;
+    fetchPingHistory();
+    const iv = setInterval(fetchPingHistory, 5000);
+    return () => clearInterval(iv);
+  }, [fetchPingHistory, lowPowerMode]);
+
+
   const fetchGames = useCallback(async () => {
     try {
       const resp = await axios.get(`${API_BASE}/detected-games`);
@@ -380,15 +456,20 @@ const App = () => {
   const maximizeApp = () => globalThis.electronAPI?.maximize();
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'fps_boost', label: 'FPS Boost', icon: Zap },
-    { id: 'network', label: 'Network', icon: Network },
-    { id: 'traffic', label: 'Traffic Shaper', icon: GitFork },
-    { id: 'multi_internet', label: 'Multi Internet', icon: Wifi },
-    { id: 'lol', label: 'LoL Optimizer', icon: Radar },
-    { id: 'advanced', label: 'AI Optimizer', icon: Cpu },
-    { id: 'system', label: 'System', icon: Monitor },
-    { id: 'settings', label: 'Settings', icon: Settings }
+    { id: 'dashboard',    label: 'Dashboard',    icon: BarChart3  },
+    { id: 'fps_boost',    label: 'FPS Boost',    icon: Zap        },
+    { id: 'network',      label: 'Network',       icon: Network    },
+    { id: 'traffic',      label: 'Traffic Shaper',icon: GitFork    },
+    { id: 'multi_internet',label:'Multi Internet',icon: Wifi       },
+    { id: 'lol',          label: 'LoL Optimizer', icon: Radar      },
+    { id: 'advanced',     label: 'AI Optimizer',  icon: Cpu        },
+    { id: 'dns',          label: 'DNS Switcher',  icon: Globe      },
+    { id: 'ping_chart',   label: 'Live Ping',     icon: Signal     },
+    { id: 'sys_tools',    label: 'System Tools',  icon: Sliders    },
+    { id: 'game_library', label: 'Game Library',  icon: Library    },
+    { id: 'scheduler',    label: 'Scheduler',     icon: Calendar   },
+    { id: 'system',       label: 'System',        icon: Monitor    },
+    { id: 'settings',     label: 'Settings',      icon: Settings   },
   ];
 
   const SUPPORTED_GAMES = [
@@ -1157,7 +1238,265 @@ const App = () => {
                 </div>
               </motion.div>
             )}
+
+          {/* ── DNS Switcher ── */}
+          {activeTab === 'dns' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} key="dns" className="tab-view" style={{ maxWidth: '680px', margin: '0 auto' }}>
+              <div className="card">
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Globe size={18} color="var(--primary)" /> DNS Switcher</h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '8px', marginBottom: '20px' }}>Switch DNS servers on all active adapters for lower latency gaming.</p>
+                {dnsStatus?.current_preset && (
+                  <div style={{ padding: '10px 14px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', marginBottom: '16px', fontSize: '13px', fontWeight: 600, color: '#15803d' }}>
+                    ✓ Active: {dnsStatus.current_preset}
+                  </div>
+                )}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '16px' }}>
+                  {(dnsStatus?.available_presets || []).map(p => (
+                    <button key={p.key} className="btn" style={{ justifyContent: 'flex-start', fontSize: '13px', padding: '12px 16px' }}
+                      onClick={async () => { const t = toast.loading(`Switching to ${p.label}...`); try { await axios.post(`${API_BASE}/dns/switch`, { preset: p.key }); fetchDnsStatus(); toast.success(`DNS → ${p.label}`, { id: t }); } catch { toast.error('DNS switch failed', { id: t }); } }}>
+                      <Globe size={14} style={{ marginRight: '8px' }} />{p.label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '16px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '10px' }}>CUSTOM DNS</div>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                    <input placeholder="Primary (e.g. 1.1.1.1)" value={dnsCustomPrimary} onChange={e => setDnsCustomPrimary(e.target.value)}
+                      style={{ flex: 1, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '13px', outline: 'none', fontFamily: 'inherit' }} />
+                    <input placeholder="Secondary (optional)" value={dnsCustomSecondary} onChange={e => setDnsCustomSecondary(e.target.value)}
+                      style={{ flex: 1, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '13px', outline: 'none', fontFamily: 'inherit' }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className="btn" style={{ fontSize: '12px' }} onClick={async () => {
+                      const t = toast.loading('Applying custom DNS...');
+                      try { await axios.post(`${API_BASE}/dns/switch`, { preset: 'custom', custom_primary: dnsCustomPrimary, custom_secondary: dnsCustomSecondary }); fetchDnsStatus(); toast.success('Custom DNS applied', { id: t }); } catch { toast.error('Failed', { id: t }); }
+                    }}>Apply Custom</button>
+                    <button className="btn" style={{ background: '#6b7280', fontSize: '12px' }} onClick={async () => {
+                      const t = toast.loading('Restoring DNS...');
+                      try { await axios.post(`${API_BASE}/dns/restore`); fetchDnsStatus(); toast.success('DNS restored to DHCP', { id: t }); } catch { toast.error('Restore failed', { id: t }); }
+                    }}>Restore Default (DHCP)</button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── Live Ping Chart ── */}
+          {activeTab === 'ping_chart' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} key="ping_chart" className="tab-view">
+              <div className="card" style={{ marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Signal size={18} color="var(--primary)" /> Live Ping Monitor</h3>
+                  <div className="stats-badge">LIVE</div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '24px' }}>
+                  {Object.entries(pingHistory).map(([host, data]) => (
+                    <div key={host} style={{ padding: '14px', background: '#f9fafb', borderRadius: '10px', textAlign: 'center', border: '1px solid var(--border)' }}>
+                      <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '4px' }}>{data.label}</div>
+                      <div style={{ fontSize: '24px', fontWeight: 800, color: data.current < 50 ? 'var(--success)' : data.current < 100 ? 'var(--warning)' : 'var(--error)' }}>
+                        {data.current >= 0 ? `${data.current.toFixed(0)}ms` : '—'}
+                      </div>
+                      <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                        avg {data.avg >= 0 ? `${data.avg}ms` : '—'} · min {data.min >= 0 ? `${data.min}ms` : '—'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {Object.entries(pingHistory).map(([host, data]) => {
+                const chartData = data.history.filter(h => h.latency >= 0).map(h => ({ t: h.timestamp.slice(11,19), ms: h.latency }));
+                return chartData.length > 1 ? (
+                  <div key={host} className="card" style={{ marginBottom: '16px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: 700, marginBottom: '12px', color: 'var(--primary)' }}>{data.label} ({host})</div>
+                    <ResponsiveContainer width="100%" height={120}>
+                      <LineChart data={chartData}>
+                        <XAxis dataKey="t" tick={{ fontSize: 9 }} interval="preserveStartEnd" />
+                        <YAxis tick={{ fontSize: 9 }} unit="ms" width={40} />
+                        <Tooltip formatter={v => [`${v.toFixed(1)}ms`, 'Ping']} />
+                        <Line type="monotone" dataKey="ms" stroke="var(--primary)" strokeWidth={2} dot={false} isAnimationActive={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : null;
+              })}
+            </motion.div>
+          )}
+
+          {/* ── System Tools ── */}
+          {activeTab === 'sys_tools' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} key="sys_tools" className="tab-view" style={{ maxWidth: '680px', margin: '0 auto' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Startup */}
+                <div className="card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}><Rocket size={16} color="var(--primary)" /> Windows Startup</h3>
+                      <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Launch optimizer automatically on Windows boot</p>
+                    </div>
+                    <button onClick={async () => {
+                      const ep = startupEnabled ? '/startup/disable' : '/startup/enable';
+                      const t = toast.loading(startupEnabled ? 'Removing startup entry...' : 'Adding startup entry...');
+                      try { await axios.post(`${API_BASE}${ep}`); fetchStartupStatus(); toast.success(startupEnabled ? 'Removed from startup' : 'Added to startup', { id: t }); } catch { toast.error('Failed', { id: t }); }
+                    }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: startupEnabled ? 'var(--success)' : 'var(--text-muted)' }}>
+                      {startupEnabled ? <ToggleRight size={36} /> : <ToggleLeft size={36} />}
+                    </button>
+                  </div>
+                </div>
+                {/* Network Adapter Power Save */}
+                <div className="card">
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}><Power size={16} color="var(--primary)" /> Network Adapter Power Saving</h3>
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>Disable Windows power management on all network adapters to reduce latency spikes</p>
+                  {adapterStatus && <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '12px' }}>Active adapters: {adapterStatus.active_adapters?.join(', ') || 'Detecting...'}</div>}
+                  <button className="btn" onClick={async () => { const t = toast.loading('Disabling adapter power saving...'); try { const r = await axios.post(`${API_BASE}/adapter/power-save-disable`); toast.success(r.data.message || 'Done', { id: t }); fetchAdapterStatus(); } catch { toast.error('Failed', { id: t }); } }}>
+                    Disable Power Saving
+                  </button>
+                </div>
+                {/* IPv6 Toggle */}
+                <div className="card">
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}><Layers size={16} color="var(--primary)" /> IPv6 Control</h3>
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>Disable IPv6 on all adapters — many games route better on IPv4-only</p>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button className="btn" onClick={async () => { const t = toast.loading('Disabling IPv6...'); try { await axios.post(`${API_BASE}/adapter/ipv6-toggle`, { disable: true }); toast.success('IPv6 disabled', { id: t }); } catch { toast.error('Failed', { id: t }); } }}>Disable IPv6</button>
+                    <button className="btn" style={{ background: '#6b7280' }} onClick={async () => { const t = toast.loading('Enabling IPv6...'); try { await axios.post(`${API_BASE}/adapter/ipv6-toggle`, { disable: false }); toast.success('IPv6 enabled', { id: t }); } catch { toast.error('Failed', { id: t }); } }}>Enable IPv6</button>
+                  </div>
+                </div>
+                {/* MTU Optimizer */}
+                <div className="card">
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}><Signal size={16} color="var(--primary)" /> MTU Optimizer</h3>
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>Auto-discover and set the optimal MTU size to eliminate packet fragmentation</p>
+                  <button className="btn" onClick={async () => { const t = toast.loading('Discovering optimal MTU (this may take ~15s)...', { duration: 20000 }); try { const r = await axios.post(`${API_BASE}/adapter/mtu-optimize`); toast.success(`MTU set to ${r.data.optimal_mtu} bytes`, { id: t }); } catch { toast.error('Failed', { id: t }); } }}>
+                    Optimize MTU
+                  </button>
+                </div>
+                {/* Visual Effects */}
+                <div className="card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ flex: 1, marginRight: '16px' }}>
+                      <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        {visualStatus?.is_optimized ? <EyeOff size={16} color="var(--success)" /> : <Eye size={16} color="var(--primary)" />} Windows Visual Effects
+                      </h3>
+                      <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>Disable transparency, animations, and shadows for raw performance</p>
+                    </div>
+                    <div style={{ padding: '6px 12px', borderRadius: '20px', background: visualStatus?.is_optimized ? '#dcfce7' : '#f3f4f6', color: visualStatus?.is_optimized ? '#15803d' : 'var(--text-muted)', fontSize: '11px', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                      {visualStatus?.is_optimized ? 'GAMING MODE' : 'DEFAULT'}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button className="btn" onClick={async () => { const t = toast.loading('Applying gaming visual mode...'); try { const r = await axios.post(`${API_BASE}/visual/optimize`); fetchVisualStatus(); toast.success(`Applied ${r.data.tweaks_applied?.length || 0} tweaks`, { id: t }); } catch { toast.error('Failed', { id: t }); } }}>
+                      <EyeOff size={14} style={{ marginRight: '6px' }} /> Gaming Mode
+                    </button>
+                    <button className="btn" style={{ background: '#6b7280' }} onClick={async () => { const t = toast.loading('Restoring visual effects...'); try { await axios.post(`${API_BASE}/visual/restore`); fetchVisualStatus(); toast.success('Visual effects restored', { id: t }); } catch { toast.error('Failed', { id: t }); } }}>
+                      <Eye size={14} style={{ marginRight: '6px' }} /> Restore
+                    </button>
+                  </div>
+                </div>
+                {/* Report Export */}
+                <div className="card">
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}><FileText size={16} color="var(--primary)" /> System Report</h3>
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>Export a full system diagnostics and performance report as JSON</p>
+                  <button className="btn" onClick={async () => { const t = toast.loading('Generating report...'); try { const r = await axios.get(`${API_BASE}/report/export`); toast.success(`Report saved to: ${r.data.file?.split(/[\\/]/).pop()}`, { id: t, duration: 6000 }); } catch { toast.error('Report export failed', { id: t }); } }}>
+                    <Download size={14} style={{ marginRight: '6px' }} /> Export Report
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── Game Library ── */}
+          {activeTab === 'game_library' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} key="game_library" className="tab-view">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h2 style={{ margin: 0 }}>Game Library</h2>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '4px' }}>{gameLibrary.total} games across {Object.keys(gameLibrary.by_store || {}).join(', ') || 'all stores'}</p>
+                </div>
+                <button className="btn" onClick={async () => { setGameScanLoading(true); const t = toast.loading('Scanning game libraries...'); try { await axios.post(`${API_BASE}/games/scan`); await fetchGameLibrary(); toast.success('Scan complete', { id: t }); } catch { toast.error('Scan failed', { id: t }); } finally { setGameScanLoading(false); } }}>
+                  <RefreshCw size={14} style={{ marginRight: '6px', animation: gameScanLoading ? 'spin 1s linear infinite' : 'none' }} /> Rescan
+                </button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
+                {gameLibrary.games?.length > 0 ? gameLibrary.games.map((g, i) => (
+                  <div key={i} className="card" style={{ padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ overflow: 'hidden' }}>
+                      <div style={{ fontWeight: 600, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.name}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>{g.store}</div>
+                    </div>
+                    {g.launch_cmd && (
+                      <button className="btn" style={{ fontSize: '11px', padding: '6px 12px', flexShrink: 0, marginLeft: '10px' }}
+                        onClick={async () => { const t = toast.loading(`Launching ${g.name}...`); try { await axios.post(`${API_BASE}/games/launch`, { launch_cmd: g.launch_cmd }); toast.success(`Launched ${g.name}`, { id: t }); } catch { toast.error('Launch failed', { id: t }); } }}>
+                        <Play size={12} style={{ marginRight: '4px' }} /> Launch
+                      </button>
+                    )}
+                  </div>
+                )) : (
+                  <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '48px', color: 'var(--text-muted)', fontSize: '14px' }}>
+                    No games found. Click <strong>Rescan</strong> to search your system.
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── Scheduler ── */}
+          {activeTab === 'scheduler' && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} key="scheduler" className="tab-view" style={{ maxWidth: '680px', margin: '0 auto' }}>
+              <div className="card" style={{ marginBottom: '20px' }}>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}><Calendar size={18} color="var(--primary)" /> Schedule Auto-Optimize</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '6px' }}>ACTION</div>
+                    <select value={scheduleForm.action} onChange={e => setScheduleForm(f => ({ ...f, action: e.target.value }))}
+                      style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '13px', outline: 'none', fontFamily: 'inherit', background: '#fff' }}>
+                      {scheduleActions.map(a => <option key={a.key} value={a.key}>{a.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, marginBottom: '6px' }}>TIME</div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input type="number" min={0} max={23} value={scheduleForm.hour} onChange={e => setScheduleForm(f => ({ ...f, hour: e.target.value }))} placeholder="HH"
+                        style={{ flex: 1, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '13px', outline: 'none', fontFamily: 'inherit' }} />
+                      <input type="number" min={0} max={59} value={scheduleForm.minute} onChange={e => setScheduleForm(f => ({ ...f, minute: e.target.value }))} placeholder="MM"
+                        style={{ flex: 1, padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '8px', fontSize: '13px', outline: 'none', fontFamily: 'inherit' }} />
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                  <input type="checkbox" id="repeat-chk" checked={scheduleForm.repeat} onChange={e => setScheduleForm(f => ({ ...f, repeat: e.target.checked }))} />
+                  <label htmlFor="repeat-chk" style={{ fontSize: '13px', cursor: 'pointer' }}>Repeat daily</label>
+                </div>
+                <button className="btn" onClick={async () => {
+                  const t = toast.loading('Adding scheduled job...');
+                  try {
+                    await axios.post(`${API_BASE}/schedule/add`, { action: scheduleForm.action, hour: parseInt(scheduleForm.hour || '0'), minute: parseInt(scheduleForm.minute || '0'), repeat: scheduleForm.repeat });
+                    fetchSchedule();
+                    toast.success('Job scheduled', { id: t });
+                  } catch { toast.error('Failed', { id: t }); }
+                }}>Add Schedule</button>
+              </div>
+              <div className="card">
+                <h3 style={{ marginBottom: '16px' }}>Active Jobs ({scheduleJobs.length})</h3>
+                {scheduleJobs.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)', fontSize: '13px' }}>No scheduled jobs. Add one above.</div>
+                ) : scheduleJobs.map(job => (
+                  <div key={job.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: '1px solid var(--border)' }}>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: '14px' }}>{job.label}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        {String(job.hour).padStart(2,'0')}:{String(job.minute).padStart(2,'0')} · {job.repeat ? 'Daily' : 'Once'} · {job.enabled ? '✓ Enabled' : '⏸ Disabled'}
+                      </div>
+                    </div>
+                    <button className="btn" style={{ background: '#ef4444', fontSize: '11px', padding: '6px 12px' }}
+                      onClick={async () => { const t = toast.loading('Removing job...'); try { await axios.post(`${API_BASE}/schedule/remove`, { id: job.id }); fetchSchedule(); toast.success('Job removed', { id: t }); } catch { toast.error('Failed', { id: t }); } }}>
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           </AnimatePresence>
+
         </main>
       </div>
     </div>

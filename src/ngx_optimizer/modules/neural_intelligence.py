@@ -103,7 +103,7 @@ class NeuralIntelligence:
             'stability_score': round(self.stability_score, 1),
             'stability_rank': rank,
             'predicted_bottleneck': self.predicted_bottleneck or "OPTIMAL",
-            'trend': "UPWARDS" if cpu_slope < -0.5 else "STABLE",
+            'trend': "DECREASING" if cpu_slope < -0.5 else ("INCREASING" if cpu_slope > 0.5 else "STABLE"),
             'history': self.metric_history[-30:],
             'timestamp': datetime.now().isoformat()
         }

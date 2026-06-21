@@ -28,7 +28,7 @@ class _PsutilFallback:
     HIGH_PRIORITY_CLASS: int = 0x00000080
     NORMAL_PRIORITY_CLASS: int = 0x00000020
     
-    def process_iter(self, **_kwargs: Any) -> Any: return []
+    def process_iter(self, attrs=None, **_kwargs: Any) -> Any: return []
     def cpu_count(self, **_kwargs: Any) -> int: return 1
     def cpu_percent(self, *args, **kwargs) -> float: return 0.0
     def virtual_memory(self, *args, **kwargs) -> Any:

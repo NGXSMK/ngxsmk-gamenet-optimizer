@@ -2,6 +2,7 @@ const { app, BrowserWindow, shell, ipcMain } = require('electron');
 const path = require('node:path');
 const url = require('node:url');
 const { spawn } = require('node:child_process');
+const http = require('node:http');
 const isDev = !app.isPackaged;
 
 let pyProc = null;
@@ -16,6 +17,49 @@ function startPython() {
   pyProc.stderr.on('data', (data) => console.error(`Python Error: ${data}`));
 }
 
+/**
+ * Poll http://localhost:5000/api/health until Flask responds (or we give up).
+ * @param {number} maxRetries - Maximum number of attempts
+ * @param {number} intervalMs - Milliseconds between retries
+ * @returns {Promise<boolean>} - Resolves true when Flask is ready, false on timeout
+ */
+function waitForFlask(maxRetries = 30, intervalMs = 500) {
+  return new Promise((resolve) => {
+    let attempts = 0;
+
+    function tryPing() {
+      attempts++;
+      const req = http.get('http://127.0.0.1:5000/api/health', (res) => {
+        if (res.statusCode === 200) {
+          console.log(`[Electron] Flask is ready after ${attempts} attempt(s).`);
+          resolve(true);
+        } else {
+          scheduleRetry();
+        }
+      });
+
+      req.on('error', () => {
+        scheduleRetry();
+      });
+
+      req.setTimeout(400, () => {
+        req.destroy();
+        scheduleRetry();
+      });
+    }
+
+    function scheduleRetry() {
+      if (attempts >= maxRetries) {
+        console.warn(`[Electron] Flask not ready after ${maxRetries} attempts — loading UI anyway.`);
+        resolve(false);
+        return;
+      }
+      setTimeout(tryPing, intervalMs);
+    }
+
+    tryPing();
+  });
+}
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -50,25 +94,28 @@ function createWindow() {
   mainWindow.setMenuBarVisibility(false);
 
   // Load the app
-  const startUrl = isDev 
-    ? 'http://localhost:5173' 
+  const startUrl = isDev
+    ? 'http://localhost:5173'
     : url.pathToFileURL(path.join(__dirname, 'dist/index.html')).toString();
 
   mainWindow.loadURL(startUrl);
 
   // Open links in external browser
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
+  mainWindow.webContents.setWindowOpenHandler(({ url: linkUrl }) => {
+    shell.openExternal(linkUrl);
     return { action: 'deny' };
   });
-
-  if (isDev) {
-    // Optional: mainWindow.webContents.openDevTools();
-  }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   startPython();
+
+  // Wait for Flask backend to be ready before creating the window
+  // so the UI doesn't load before the API is available.
+  if (!isDev) {
+    await waitForFlask(40, 500); // up to 20 seconds
+  }
+
   createWindow();
 
   app.on('activate', function () {
@@ -80,4 +127,3 @@ app.on('window-all-closed', function () {
   if (pyProc) pyProc.kill();
   if (process.platform !== 'darwin') app.quit();
 });
-
