@@ -58,13 +58,18 @@ def get_psutil() -> Any:
         return cast(Any, _PsutilFallback())
 
 import logging
+import os
+
+_LOG_DIR = os.path.join(os.environ.get('APPDATA', os.path.expanduser('~')), 'NGXSMK GameNet Optimizer')
+DATA_DIR = _LOG_DIR
 
 def get_logger(name: str) -> logging.Logger:
     """Get a configured logger"""
+    os.makedirs(_LOG_DIR, exist_ok=True)
     logger = logging.getLogger(name)
     if not logger.handlers:
         logger.setLevel(logging.DEBUG)
-        fh = logging.FileHandler('optimizer.log', encoding='utf-8')
+        fh = logging.FileHandler(os.path.join(_LOG_DIR, 'optimizer.log'), encoding='utf-8')
         fh.setLevel(logging.DEBUG)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         fh.setFormatter(formatter)

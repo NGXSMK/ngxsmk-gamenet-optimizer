@@ -22,6 +22,7 @@ DisableDirPage=auto
 PrivilegesRequired=admin
 OutputDir=..\dist
 OutputBaseFilename=NGXSMK_GameNet_Optimizer_Setup_{#MyAppVersion}
+SetupIconFile=..\icon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/max
 SolidCompression=yes

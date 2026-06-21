@@ -9,16 +9,15 @@ import time
 from itertools import islice
 from typing import Dict, List, Any, Optional
 import threading
-from .compat import get_logger # type: ignore
+from .compat import get_logger, DATA_DIR # type: ignore
 
 logger = get_logger("config_manager")
 
 class ConfigManager:
     def __init__(self, config_file: Optional[str] = None):
         if config_file is None:
-            # Store config next to the project root, not CWD
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            config_file = os.path.join(project_root, "config.json")
+            os.makedirs(DATA_DIR, exist_ok=True)
+            config_file = os.path.join(DATA_DIR, "config.json")
         self.config_file = config_file
         self.config = {}
         self.lock = threading.Lock()

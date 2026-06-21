@@ -10,15 +10,15 @@ import time
 from typing import Dict, List, Set, Any, Optional
 from threading import Lock
 
-from .compat import get_psutil, get_logger # type: ignore
+from .compat import get_psutil, get_logger, DATA_DIR # type: ignore
 psutil = get_psutil()
 logger = get_logger("learning_core")
 
 class LearningCore:
     def __init__(self, data_file: Optional[str] = None):
         if data_file is None:
-            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            data_file = os.path.join(project_root, "learning_data.json")
+            os.makedirs(DATA_DIR, exist_ok=True)
+            data_file = os.path.join(DATA_DIR, "learning_data.json")
         
         self.data_file = data_file
         self.lock = Lock()
