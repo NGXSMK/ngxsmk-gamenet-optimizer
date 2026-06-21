@@ -73,6 +73,54 @@ const features = [
     desc: 'Live CPU, RAM, network charts with trend analysis. See exactly what your PC is doing — and how much performance you just gained.',
     color: '#06b6d4',
   },
+  {
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    ),
+    title: 'DNS Switcher',
+    desc: 'One-click switch to Cloudflare, Google, OpenDNS, Quad9, or custom DNS servers. Easy revert to DHCP on demand.',
+    color: '#3b82f6',
+  },
+  {
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+        <line x1="6" y1="6" x2="6.01" y2="6"/>
+        <line x1="6" y1="18" x2="6.01" y2="18"/>
+      </svg>
+    ),
+    title: 'Network Adapter Optimizer',
+    desc: 'Disable adapter power saving, optimize MTU settings, disable unnecessary protocols like IPv6 for pure gaming stability.',
+    color: '#10b981',
+  },
+  {
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/>
+        <path d="M12 16L16 12L12 8"/>
+        <path d="M8 12H16"/>
+      </svg>
+    ),
+    title: 'Visual Effects Tweaker',
+    desc: 'Optimize Windows window animations, font smoothing, and registry visual enhancements for maximum gaming performance.',
+    color: '#eab308',
+  },
+  {
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    ),
+    title: 'Auto Scheduler & Diagnostics',
+    desc: 'Schedule automated performance tuning runs, manage Windows startup apps, and export detailed system diagnostics reports.',
+    color: '#ef4444',
+  },
 ];
 
 const supportedGames = [
@@ -278,7 +326,7 @@ const App = () => {
           <div className="container">
             <h2 className="section-title">Everything in One Tool</h2>
             <p className="section-subtitle">
-              Nine powerful modules. One clean interface. Zero bloat.
+              14+ powerful modules. One clean interface. Zero bloat.
             </p>
             <div className="features-grid">
               {features.map((f, i) => (
