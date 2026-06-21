@@ -1,0 +1,33 @@
+# UTF-8
+#
+# For more details about fixed file info 'ffi' see:
+# https://pyinstaller.org/en/stable/feature-notes.html#providing-windows-version-information
+#
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(2, 3, 0, 0),
+    prodvers=(2, 3, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+        StringTable(
+          u'040904B0',
+          [StringStruct(u'CompanyName', u'NGXSMK'),
+          StringStruct(u'FileDescription', u'NGXSMK GameNet Optimizer - Gaming Performance Tool'),
+          StringStruct(u'FileVersion', u'2.3.0.0'),
+          StringStruct(u'InternalName', u'NGXSMK_GameNet_Optimizer'),
+          StringStruct(u'LegalCopyright', u'(c) 2026 NGXSMK. MIT License.'),
+          StringStruct(u'OriginalFilename', u'NGXSMK_GameNet_Optimizer_Advanced.exe'),
+          StringStruct(u'ProductName', u'NGXSMK GameNet Optimizer'),
+          StringStruct(u'ProductVersion', u'2.3.0.0')])
+      ]),
+    VarFileInfo([VarStruct(u'Translation', [0x0409, 0x04B0])])
+  ]
+)

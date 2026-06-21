@@ -86,6 +86,12 @@ def create_spec_file(arch='x64'):
     else:
         target_arch_line = 'target_arch=None,'
 
+    # Version info file
+    version_file = SCRIPT_DIR / 'version_info.txt'
+    manifest_file = SCRIPT_DIR / 'exe_manifest.xml'
+    version_line = f"version='{version_file}'," if version_file.exists() else "version=None,"
+    manifest_line = f"manifest='{manifest_file}'," if manifest_file.exists() else "manifest=None,"
+
     spec_content = f'''# -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
@@ -142,6 +148,8 @@ exe = EXE(
     disable_windowed_traceback=False,
     argv_emulation=False,
     {target_arch_line}
+    {version_line}
+    {manifest_line}
     codesign_identity=None,
     entitlements_file=None,
     {icon_line}

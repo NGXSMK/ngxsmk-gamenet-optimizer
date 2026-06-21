@@ -79,6 +79,18 @@ def get_pyinstaller_command(arch='x64'):
     if icon_ico.exists():
         cmd.append(f"--icon={icon_ico}")
 
+    # Embed version info for Windows metadata (reduces SmartScreen severity)
+    version_file = SCRIPT_DIR / 'version_info.txt'
+    if version_file.exists():
+        cmd.append(f"--version-file={version_file}")
+        print("[INFO] Embedding version info (version_info.txt)")
+
+    # Embed assembly manifest
+    manifest_file = SCRIPT_DIR / 'exe_manifest.xml'
+    if manifest_file.exists():
+        cmd.append(f"--manifest={manifest_file}")
+        print("[INFO] Embedding assembly manifest (exe_manifest.xml)")
+
     for f_rel in ['..\\README.md', '..\\LICENSE']:
         f_abs = PROJECT_ROOT / f_rel.replace('..\\', '')
         if f_abs.exists():
