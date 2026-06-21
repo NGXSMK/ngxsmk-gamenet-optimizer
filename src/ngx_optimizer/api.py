@@ -116,7 +116,7 @@ def get_detected_games():
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "active", "version": "2.2.6"})
+    return jsonify({"status": "active", "version": "2.3.0"})
 
 def _wmic(cmd: str) -> str:
     try:
@@ -413,12 +413,12 @@ def get_advanced_status():
 def serve_frontend(path):
     web_dist = _get_web_dist()
     if not os.path.isdir(web_dist):
-        return jsonify({"status": "NGXSMK API running", "version": "2.2.6"})
+        return jsonify({"status": "NGXSMK API running", "version": "2.3.0"})
     if path and os.path.isfile(os.path.join(web_dist, path)):
         return send_from_directory(web_dist, path)
     if os.path.isfile(os.path.join(web_dist, 'index.html')):
         return send_from_directory(web_dist, 'index.html')
-    return jsonify({"status": "NGXSMK API running", "version": "2.2.6"})
+    return jsonify({"status": "NGXSMK API running", "version": "2.3.0"})
 
 
 @app.errorhandler(Exception)

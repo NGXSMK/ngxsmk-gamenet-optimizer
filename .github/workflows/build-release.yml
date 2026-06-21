@@ -1,0 +1,72 @@
+name: Build Release EXEs
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        arch: [x64, x86]
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - uses: actions/setup-node@v4
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build frontend
+        run: |
+          cd web-ui
+          npm install
+          npm run build
+
+      - name: Build EXE (${{ matrix.arch }})
+        run: |
+          cd scripts
+          python build_advanced_exe.py --arch ${{ matrix.arch }}
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NGXSMK_GameNet_Optimizer_${{ matrix.arch }}
+          path: scripts/dist/NGXSMK_GameNet_Optimizer_Advanced.exe
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Rename artifacts for release
+        run: |
+          mv NGXSMK_GameNet_Optimizer_x64/NGXSMK_GameNet_Optimizer_Advanced.exe NGXSMK_GameNet_Optimizer_x64.exe
+          mv NGXSMK_GameNet_Optimizer_x86/NGXSMK_GameNet_Optimizer_Advanced.exe NGXSMK_GameNet_Optimizer_x86.exe
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: NGXSMK GameNet Optimizer ${{ github.ref_name }}
+          body_path: RELEASE_NOTES.md
+          files: |
+            NGXSMK_GameNet_Optimizer_x64.exe
+            NGXSMK_GameNet_Optimizer_x86.exe
+          fail_on_unmatched_files: false
