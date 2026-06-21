@@ -8,10 +8,18 @@ const isDev = !app.isPackaged;
 let pyProc = null;
 
 function startPython() {
-  const script = path.join(__dirname, '../src/ngx_optimizer/api.py');
-  pyProc = spawn('python', [script], {
-    cwd: path.join(__dirname, '..')
-  });
+  if (isDev) {
+    const script = path.join(__dirname, '../src/ngx_optimizer/api.py');
+    pyProc = spawn('python', [script], {
+      cwd: path.join(__dirname, '..')
+    });
+  } else {
+    // In production, spawn the bundled PyInstaller backend executable
+    const exePath = path.join(process.resourcesPath, 'backend/NGXSMK_GameNet_Optimizer.exe');
+    pyProc = spawn(exePath, ['--background'], {
+      cwd: path.dirname(exePath)
+    });
+  }
 
   pyProc.stdout.on('data', (data) => console.log(`Python: ${data}`));
   pyProc.stderr.on('data', (data) => console.error(`Python Error: ${data}`));

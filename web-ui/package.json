@@ -48,6 +48,12 @@
       "dist/**/*",
       "electron-main.cjs"
     ],
+    "extraResources": [
+      {
+        "from": "../scripts/dist/NGXSMK_GameNet_Optimizer.exe",
+        "to": "backend/NGXSMK_GameNet_Optimizer.exe"
+      }
+    ],
     "win": {
       "target": "portable",
       "icon": "public/vite.svg"
