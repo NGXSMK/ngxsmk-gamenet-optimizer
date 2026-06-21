@@ -22,12 +22,12 @@ class StartupManager:
     def _get_exe_path(self) -> str:
         """Return the path of the running executable or script."""
         if getattr(sys, 'frozen', False):
-            return f'"{sys.executable}"'
+            return f'"{sys.executable}" --background'
         # Running as a script — wrap with python
         script = os.path.abspath(
             os.path.join(os.path.dirname(__file__), '..', '..', 'api.py')
         )
-        return f'"{sys.executable}" "{script}"'
+        return f'"{sys.executable}" "{script}" --background'
 
     def is_enabled(self) -> bool:
         """Check if startup entry exists."""

@@ -698,6 +698,14 @@ def remove_schedule_job():
 def export_report():
     return jsonify(report_exporter.export_to_file())
 
+def open_browser():
+    """Wait for Flask to start, then open the default web browser."""
+    if '--background' in sys.argv:
+        return
+    import webbrowser
+    time.sleep(1.5)
+    webbrowser.open('http://127.0.0.1:5000/')
+
 def run_server():
     app.run(host='127.0.0.1', port=5000, debug=False)
 
@@ -705,4 +713,5 @@ if __name__ == '__main__':
     import multiprocessing
     multiprocessing.freeze_support()
     print("NGXSMK Backend API starting on http://localhost:5000")
+    threading.Thread(target=open_browser, daemon=True).start()
     run_server()
