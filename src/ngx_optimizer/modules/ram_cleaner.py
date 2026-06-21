@@ -65,7 +65,7 @@ class RAMCleaner:
             if self.system == "Windows":
                 try:
                     # Flush DNS
-                    subprocess.run(['ipconfig', '/flushdns'], capture_output=True, check=False)
+                    subprocess.run(['ipconfig', '/flushdns'], capture_output=True, check=False, timeout=15)
                     # Working set reduction
                     ctypes.windll.kernel32.SetProcessWorkingSetSize(ctypes.windll.kernel32.GetCurrentProcess(), -1, -1) # pyre-ignore[16]
                 except Exception as e:

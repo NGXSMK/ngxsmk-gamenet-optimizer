@@ -161,3 +161,8 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Website build output
+website/dist/
+website/node_modules/
+

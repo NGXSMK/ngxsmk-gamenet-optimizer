@@ -47,7 +47,7 @@ class LoLOptimizer:
                 except (psutil.AccessDenied, psutil.NoSuchProcess): # pyre-ignore[16]
                     continue
             if self.system == "Windows":
-                subprocess.run(['ipconfig', '/flushdns'], capture_output=True, check=False)
+                subprocess.run(['ipconfig', '/flushdns'], capture_output=True, check=False, timeout=15)
             gc.collect()
         except Exception as e:
             res['errors'].append(str(e))

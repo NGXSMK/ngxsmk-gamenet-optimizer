@@ -31,17 +31,17 @@ class NeuralIntelligence:
             
         self._analyze_stability()
 
-    def _analyze_stability(self):
+    def _analyze_stability(self) -> Dict[str, Any]:
         """Calculate system stability based on variance and trends"""
         count = len(self.metric_history)
         if count < 5:
-            return
+            return self._stability_response()
 
         cpus = [m['cpu'] for m in self.metric_history]
         rams = [m['ram'] for m in self.metric_history]
         
         # Pure Python Variance (Volatility)
-        def get_std(data: List[float]):
+        def get_std(data: List[float]) -> float:
             avg = sum(data) / len(data)
             variance = sum((x - avg) ** 2 for x in data) / len(data)
             return variance ** 0.5
@@ -50,7 +50,7 @@ class NeuralIntelligence:
         ram_volatility = get_std(rams)
         
         # Pure Python Slope (Linear Regression)
-        def get_slope(data: List[float]):
+        def get_slope(data: List[float]) -> float:
             n = len(data)
             x = list(range(n))
             sum_x = sum(x)
@@ -82,6 +82,10 @@ class NeuralIntelligence:
         else:
             self.predicted_bottleneck = "OPTIMAL"
 
+        return self._stability_response()
+
+    def _stability_response(self) -> Dict[str, Any]:
+        rank: str
         if self.stability_score > 95:
             rank = "ELITE"
         elif self.stability_score > 80:
@@ -89,11 +93,20 @@ class NeuralIntelligence:
         else:
             rank = "CAUTION"
 
+        cpus = [m['cpu'] for m in self.metric_history[-5:]] if self.metric_history else []
+        cpu_slope = 0.0
+        if len(cpus) >= 2:
+            n = len(cpus)
+            cpu_slope = (n * sum(i * cpus[i] for i in range(n)) - sum(range(n)) * sum(cpus)) / (n * sum(i*i for i in range(n)) - sum(range(n))**2) if n * sum(i*i for i in range(n)) - sum(range(n))**2 != 0 else 0.0
+
         return {
-            'stability_score': float(f"{self.stability_score:.1f}"),
+            'stability_score': round(self.stability_score, 1),
             'stability_rank': rank,
-            'predicted_bottleneck': self.predicted_bottleneck,
+            'predicted_bottleneck': self.predicted_bottleneck or "OPTIMAL",
             'trend': "UPWARDS" if cpu_slope < -0.5 else "STABLE",
-            'history': self.metric_history[-30:],  # type: ignore
+            'history': self.metric_history[-30:],
             'timestamp': datetime.now().isoformat()
         }
+
+    def get_neural_status(self) -> Dict[str, Any]:
+        return self._stability_response()

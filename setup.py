@@ -15,13 +15,15 @@ setup(
         "netifaces>=0.11.0",
         "requests>=2.31.0",
         "customtkinter>=5.2.0",
+        "flask>=3.0.0",
+        "flask-cors>=4.0.0",
     ],
     entry_points={
         "console_scripts": [
-            "ngx-optimizer=ngx_optimizer.run:main",
+            "ngx-optimizer-api=ngx_optimizer.api:run_server",
         ],
     },
-    python_requires=">=3.7",
+    python_requires=">=3.8",
     author="NGXSMK",
     description="A comprehensive network and system optimization tool for gamers",
     long_description=open("README.md").read(),

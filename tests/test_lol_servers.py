@@ -10,7 +10,7 @@ try:
     
     def test_lol_servers():
         """Test League of Legends server latency"""
-        print("🎮 League of Legends Server Latency Test")
+        print("League of Legends Server Latency Test")
         print("=" * 50)
         
         lol_optimizer = LoLOptimizer()
@@ -18,23 +18,23 @@ try:
         print("Testing server latencies...")
         latencies = lol_optimizer.get_lol_server_latency()
         
-        print("\n📊 Server Latency Results:")
+        print("\nServer Latency Results:")
         print("-" * 30)
         
         for region, latency in latencies.items():
             if latency < 999:
                 if latency < 50:
-                    status = "✅ Good"
+                    status = "[OK] Good"
                 elif latency < 100:
-                    status = "⚠️  Fair"
+                    status = "[WARN] Fair"
                 else:
-                    status = "❌ Poor"
+                    status = "[POOR] Poor"
                 print(f"{region:4}: {latency:6.1f}ms {status}")
             else:
-                print(f"{region:4}: {'Unable to reach':>15} ❌")
+                print(f"{region:4}: {'Unable to reach':>15} [FAIL]")
         
         # Performance metrics
-        print("\n📈 LoL Performance Metrics:")
+        print("\nLoL Performance Metrics:")
         print("-" * 30)
         metrics = lol_optimizer.get_lol_performance_metrics()
         print(f"Processes Running: {metrics['running']}")
@@ -44,9 +44,9 @@ try:
         test_lol_servers()
         
 except ImportError as e:
-    print(f"❌ Import error: {e}")
+    print(f"[ERROR] Import error: {e}")
     print("Make sure you're running from the project directory")
     sys.exit(1)
 except Exception as e:
-    print(f"❌ Error: {e}")
+    print(f"[ERROR] Error: {e}")
     sys.exit(1)

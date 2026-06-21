@@ -70,8 +70,8 @@ class FPSBoost:
         """Optimize GPU settings"""
         if self.system != "Windows": return True
         try:
-            subprocess.run(['powershell', '-Command', 'Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\GameBar" -Name "AllowAutoGameMode" -Value 0'], capture_output=True, check=False)
-            subprocess.run(['powershell', '-Command', 'Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR" -Name "AppCaptureEnabled" -Value 0'], capture_output=True, check=False)
+            subprocess.run(['powershell', '-Command', 'Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\GameBar" -Name "AllowAutoGameMode" -Value 0'], capture_output=True, check=False, timeout=15)
+            subprocess.run(['powershell', '-Command', 'Set-ItemProperty -Path "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR" -Name "AppCaptureEnabled" -Value 0'], capture_output=True, check=False, timeout=15)
             return True
         except Exception as e:
             logger.debug("GPU optim settings fail: %s", e)
@@ -82,7 +82,7 @@ class FPSBoost:
         res = {'power': False}
         try:
             if self.system == "Windows":
-                subprocess.run(['powercfg', '/setactive', '8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c'], capture_output=True, check=False)
+                subprocess.run(['powercfg', '/setactive', '8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c'], capture_output=True, check=False, timeout=15)
                 res['power'] = True
         except Exception as e:
             logger.debug("System perf optimization fail: %s", e)

@@ -52,5 +52,10 @@
       "target": "portable",
       "icon": "public/vite.svg"
     }
+  },
+  "allowScripts": {
+    "electron@41.0.0": true,
+    "electron-winstaller@5.4.0": true,
+    "esbuild@0.27.3": true
   }
 }

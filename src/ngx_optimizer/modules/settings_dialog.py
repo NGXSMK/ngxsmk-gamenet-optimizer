@@ -89,7 +89,7 @@ class SettingsDialog:
         if not isinstance(h2_font, customtkinter.CTkFont):
             h2_font = customtkinter.CTkFont(size=18, weight="bold")
             
-        customtkinter.CTkLabel(header, text="⚙️ SYSTEM PREFERENCES", 
+        customtkinter.CTkLabel(header, text="SYSTEM PREFERENCES", 
                                font=h2_font,
                                text_color=self.colors['accent']).pack(padx=20, pady=20, side="left")
 

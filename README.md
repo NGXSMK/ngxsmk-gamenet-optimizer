@@ -1,40 +1,25 @@
 # NGXSMK Neural Optimizer
 
+[![Website](https://img.shields.io/badge/Website-ngxsmk.github.io-6366f1.svg)](https://ngxsmk.github.io/ngxsmk-gamenet-optimizer/)
 [![Version](https://img.shields.io/badge/Version-2.2.6-blue.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
-[![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![React](https://img.shields.io/badge/UI-React%2018-61dafb.svg)](https://reactjs.org/)
 [![Electron](https://img.shields.io/badge/Desktop-Electron-47848f.svg)](https://www.electronjs.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-lightgrey.svg)](https://github.com)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/actions)
-
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11%20(32bit%2F64bit)-lightgrey.svg)](https://github.com)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed-success.svg)](https://ngxsmk.github.io/ngxsmk-gamenet-optimizer/)
 
 > **A powerful, open-source gaming optimization suite with modern UI that enhances your gaming experience through advanced network optimization, system tuning, and real-time performance monitoring.**
 
-## 🚀 Quick Start
+**[Visit the official website](https://ngxsmk.github.io/ngxsmk-gamenet-optimizer/) for more information and downloads.**
+
+## Quick Start
 
 ### Download Pre-built Executable (Recommended)
 1. **Download** the latest release from [Releases](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
 2. **Extract** the zip file
 3. **Run** `NGXSMK Neural Optimizer.exe` (The new Electron-based Neural Dashboard)
 4. **Enjoy** vectorized, low-latency gaming!
-
-### Build from Source
-```bash
-# Clone the repository
-git clone https://github.com/NGXSMK/ngxsmk-gamenet-optimizer.git
-cd ngxsmk-gamenet-optimizer
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the Neural Backend
-python src/ngx_optimizer/api.py
-
-# Run the UI (Dev Mode)
-cd web-ui
-npm run dev
-```
 
 ## ✨ What is NGXSMK GameNet Optimizer?
 

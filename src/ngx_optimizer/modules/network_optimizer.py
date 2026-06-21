@@ -38,7 +38,7 @@ class NetworkOptimizer:
         """Apply gaming network optimizations"""
         try:
             if platform.system() == "Windows":
-                subprocess.run(["netsh", "int", "tcp", "set", "global", "autotuninglevel=normal"], capture_output=True, check=False)
+                subprocess.run(["netsh", "int", "tcp", "set", "global", "autotuninglevel=normal"], capture_output=True, check=False, timeout=15)
             return {'type': 'Gaming', 'status': 'Applied'}
         except Exception as e:
             return {'type': 'Gaming', 'error': str(e)}
@@ -59,3 +59,31 @@ class NetworkOptimizer:
     def get_optimization_status(self) -> Dict[str, Any]:
         """Get current status"""
         return {'is_optimizing': self.is_optimizing}
+
+    def run_speed_test(self) -> Dict[str, Any]:
+        """Run a bandwidth speed test using speedtest-cli"""
+        try:
+            import speedtest
+            st = speedtest.Speedtest(secure=True)
+            st.get_best_server()
+            download_bps = st.download()
+            upload_bps = st.upload()
+            ping_ms = st.results.ping
+            server_info = {
+                'host': st.results.server.get('host', ''),
+                'location': f"{st.results.server.get('name', '')}, {st.results.server.get('country', '')}",
+                'sponsor': st.results.server.get('sponsor', '')
+            }
+            return {
+                'download_mbps': round(download_bps / 1_000_000, 2),
+                'upload_mbps': round(upload_bps / 1_000_000, 2),
+                'ping_ms': round(ping_ms, 1) if ping_ms else 0,
+                'server': server_info,
+                'timestamp': datetime.now().isoformat()
+            }
+        except ImportError:
+            logger.debug("speedtest-cli not installed, using estimation")
+            return {'error': 'speedtest-cli not available', 'download_mbps': 0, 'upload_mbps': 0, 'ping_ms': 0}
+        except Exception as e:
+            logger.debug("Speed test failed: %s", e)
+            return {'error': str(e), 'download_mbps': 0, 'upload_mbps': 0, 'ping_ms': 0}

@@ -218,7 +218,7 @@ class GamingOptimizer:
             opts = []
             if platform.system() == "Windows":
                 key = "HKEY_CURRENT_USER\\Software\\Microsoft\\GameBar"
-                subprocess.run(["reg", "add", key, "/v", "AllowAutoGameMode", "/t", "REG_DWORD", "/d", "1", "/f"], capture_output=True, check=False)
+                subprocess.run(["reg", "add", key, "/v", "AllowAutoGameMode", "/t", "REG_DWORD", "/d", "1", "/f"], capture_output=True, check=False, timeout=15)
                 opts.append({"type": "Game Mode", "status": "Optimized"})
             return {'type': 'Windows Game Mode', 'optimizations': opts, 'timestamp': datetime.now().isoformat()}
         except Exception as e:
@@ -230,7 +230,7 @@ class GamingOptimizer:
             opts = []
             if platform.system() == "Windows":
                 # High performance guid
-                subprocess.run(["powercfg", "/setactive", "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"], capture_output=True, check=False)
+                subprocess.run(["powercfg", "/setactive", "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"], capture_output=True, check=False, timeout=15)
                 opts.append("Set High Performance Power Plan")
             return {'type': 'Power Plan', 'optimizations': opts, 'timestamp': datetime.now().isoformat()}
         except Exception as e:
@@ -245,8 +245,8 @@ class GamingOptimizer:
         try:
             opts = []
             if platform.system() == "Windows":
-                subprocess.run(["netsh", "int", "tcp", "set", "global", "autotuninglevel=normal"], capture_output=True, check=False)
-                subprocess.run(["netsh", "int", "tcp", "set", "global", "nagle=disabled"], capture_output=True, check=False)
+                subprocess.run(["netsh", "int", "tcp", "set", "global", "autotuninglevel=normal"], capture_output=True, check=False, timeout=15)
+                subprocess.run(["netsh", "int", "tcp", "set", "global", "nagle=disabled"], capture_output=True, check=False, timeout=15)
                 opts.append("Applied network stack tweaks")
             return {'type': 'Network', 'optimizations': opts, 'timestamp': datetime.now().isoformat()}
         except Exception as e:
@@ -256,14 +256,15 @@ class GamingOptimizer:
         """Set process priorities for game"""
         opts = []
         try:
-            for pname in game.get('processes', []):
-                for proc in psutil.process_iter(['pid', 'name']): # pyre-ignore[16]
-                    try:
-                        if proc.info.get('name', '').lower() == pname.lower():
-                            proc.nice(psutil.HIGH_PRIORITY_CLASS) # pyre-ignore[16]
-                            opts.append(f"Set high priority for {pname}")
-                    except (psutil.NoSuchProcess, psutil.AccessDenied): # pyre-ignore[16]
-                        continue
+            target_names = [p.lower() for p in game.get('processes', [])]
+            for proc in psutil.process_iter(['pid', 'name']): # pyre-ignore[16]
+                try:
+                    pname = proc.info.get('name', '').lower()
+                    if pname in target_names:
+                        proc.nice(psutil.HIGH_PRIORITY_CLASS) # pyre-ignore[16]
+                        opts.append(f"Set high priority for {pname}")
+                except (psutil.NoSuchProcess, psutil.AccessDenied): # pyre-ignore[16]
+                    continue
             return {'type': 'Priorities', 'optimizations': opts, 'timestamp': datetime.now().isoformat()}
         except Exception as e:
             return {'type': 'Priorities', 'error': str(e)}

@@ -133,7 +133,8 @@ class ConfigManager:
                 "log_level": "INFO",
                 "backup_config": True,
                 "update_check": True
-            }
+            },
+            "low_power_mode": False
         }
     
     def get_fps_boost_config(self) -> Dict[str, Any]:
@@ -192,6 +193,14 @@ class ConfigManager:
         """Set advanced configuration"""
         return self.set_setting("advanced", config)
     
+    def get_low_power_mode(self) -> bool:
+        """Get low power mode status"""
+        return self.get_setting("low_power_mode", False)
+
+    def set_low_power_mode(self, enabled: bool) -> None:
+        """Set low power mode"""
+        self.set_setting("low_power_mode", enabled)
+
     def reset_to_defaults(self) -> bool:
         """Reset all settings to defaults"""
         try:
@@ -262,7 +271,8 @@ class ConfigManager:
     def backup_config(self) -> bool:
         """Create a backup of the current configuration"""
         try:
-            backup_file = f"config_backup_{int(time.time())}.json"
+            backup_dir = os.path.dirname(self.config_file)
+            backup_file = os.path.join(backup_dir, f"config_backup_{int(time.time())}.json")
             return self.export_config(backup_file)
         except Exception:
             return False
@@ -270,6 +280,9 @@ class ConfigManager:
     def restore_config(self, backup_file: str) -> bool:
         """Restore configuration from backup"""
         try:
+            if not os.path.isabs(backup_file):
+                backup_dir = os.path.dirname(self.config_file)
+                backup_file = os.path.join(backup_dir, backup_file)
             return self.import_config(backup_file)
         except Exception:
             return False
@@ -277,10 +290,11 @@ class ConfigManager:
     def get_recent_backups(self) -> List[str]:
         """Get list of recent configuration backups"""
         try:
+            backup_dir = os.path.dirname(self.config_file)
             backup_files: List[str] = []
-            for file in os.listdir("."):
-                if file.startswith("config_backup_") and file.endswith(".json"):
-                    backup_files.append(file)
+            for entry in os.scandir(backup_dir):
+                if entry.name.startswith("config_backup_") and entry.name.endswith(".json"):
+                    backup_files.append(entry.path)
             
             # Sort by modification time (newest first)
             backup_files.sort(key=lambda x: os.path.getmtime(x), reverse=True)

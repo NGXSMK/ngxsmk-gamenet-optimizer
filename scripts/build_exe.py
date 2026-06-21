@@ -8,39 +8,94 @@ import os
 import sys
 import subprocess
 import shutil
+import argparse
 from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).parent.resolve()
+PROJECT_ROOT = SCRIPT_DIR.parent
 
 def install_pyinstaller():
     """Install PyInstaller if not already installed"""
     try:
-        import PyInstaller # type: ignore
-        print("✅ PyInstaller is already installed")
+        import PyInstaller
+        print("[OK] PyInstaller is already installed")
         return True
     except ImportError:
-        print("📦 Installing PyInstaller...")
+        print("Installing PyInstaller...")
         try:
             subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pyinstaller'])
-            print("✅ PyInstaller installed successfully")
+            print("[OK] PyInstaller installed successfully")
             return True
         except subprocess.CalledProcessError:
-            print("❌ Failed to install PyInstaller")
+            print("[ERROR] Failed to install PyInstaller")
             return False
 
-def create_spec_file():
+def build_frontend():
+    """Build the React frontend"""
+    web_ui_dir = PROJECT_ROOT / 'web-ui'
+    if not web_ui_dir.is_dir():
+        print("[WARN] web-ui directory not found, skipping frontend build")
+        return False
+
+    print("Building React frontend...")
+    try:
+        npm = 'npm.cmd' if sys.platform == 'win32' else 'npm'
+        print("  [1/2] Installing npm dependencies...")
+        subprocess.check_call([npm, 'install'], cwd=str(web_ui_dir), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print("  [2/2] Building React app...")
+        subprocess.check_call([npm, 'run', 'build'], cwd=str(web_ui_dir))
+        print("[OK] React frontend built successfully")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"[WARN] Frontend build failed (non-fatal): {e}")
+        return False
+    except FileNotFoundError:
+        print("[WARN] npm not found, skipping frontend build")
+        return False
+
+def create_spec_file(arch='x64'):
     """Create PyInstaller spec file for the application"""
-    spec_content = '''# -*- mode: python ; coding: utf-8 -*-
+    datas = [
+        ('../src/ngx_optimizer/modules', 'ngx_optimizer/modules'),
+    ]
+
+    for f_rel in ['../README.md', '../LICENSE']:
+        f_abs = PROJECT_ROOT / f_rel.replace('../', '')
+        if f_abs.exists():
+            datas.append((f_rel, '.'))
+        else:
+            print(f"[WARN] {f_rel} not found, skipping")
+
+    web_dist = PROJECT_ROOT / 'web-ui' / 'dist'
+    if web_dist.is_dir():
+        datas.append(('../web-ui/dist', 'web-ui/dist'))
+        print("[INFO] Including web-ui/dist in bundle")
+    else:
+        print("[INFO] web-ui/dist not found (frontend will be unavailable in bundle)")
+
+    datas_str = ',\n        '.join(repr(d) for d in datas)
+
+    icon_ico = PROJECT_ROOT / 'icon.ico'
+    if icon_ico.exists():
+        icon_line = f"icon=r'{icon_ico}',"
+    else:
+        icon_line = 'icon=None,'
+
+    if arch == 'x86':
+        target_arch_line = "target_arch='x86',"
+    else:
+        target_arch_line = 'target_arch=None,'
+
+    spec_content = f'''# -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
 
 a = Analysis(
-    ['main.py'],
-    pathex=[],
+    ['../src/ngx_optimizer/api.py'],
+    pathex=['../src'],
     binaries=[],
     datas=[
-        ('modules', 'modules'),
-        ('README.md', '.'),
-        ('LICENSE', '.'),
-        ('requirements.txt', '.'),
+        {datas_str},
     ],
     hiddenimports=[
         'psutil',
@@ -58,7 +113,7 @@ a = Analysis(
         'numpy',
     ],
     hookspath=[],
-    hooksconfig={},
+    hooksconfig={{}},
     runtime_hooks=[],
     excludes=[],
     win_no_prefer_redirects=False,
@@ -86,36 +141,36 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch=None,
+    {target_arch_line}
     codesign_identity=None,
     entitlements_file=None,
-    icon='icon.ico' if os.path.exists('icon.ico') else None,
+    {icon_line}
 )
 '''
-    
-    with open('ngxsmk_gamenet_optimizer.spec', 'w') as f:
+
+    spec_path = SCRIPT_DIR / 'ngxsmk_gamenet_optimizer.spec'
+    with open(spec_path, 'w') as f:
         f.write(spec_content)
-    
-    print("✅ PyInstaller spec file created")
+
+    print("[OK] PyInstaller spec file created")
 
 def build_executable():
     """Build the executable using PyInstaller"""
-    print("🔨 Building executable...")
-    
+    print("Building executable...")
+
     try:
-        # Build using the spec file
         subprocess.check_call([
             sys.executable, '-m', 'PyInstaller',
             '--clean',
             '--noconfirm',
-            'ngxsmk_gamenet_optimizer.spec'
-        ])
-        
-        print("✅ Executable built successfully!")
+            str(SCRIPT_DIR / 'ngxsmk_gamenet_optimizer.spec')
+        ], cwd=str(SCRIPT_DIR))
+
+        print("[OK] Executable built successfully!")
         return True
-        
+
     except subprocess.CalledProcessError as e:
-        print(f"❌ Build failed: {e}")
+        print(f"[ERROR] Build failed: {e}")
         return False
 
 def create_installer_script():
@@ -129,7 +184,7 @@ REM Check if Python is installed
 python --version >nul 2>&1
 if errorlevel 1 (
     echo Error: Python is not installed
-    echo Please install Python 3.7+ from https://python.org
+    echo Please install Python 3.8+ from https://python.org
     pause
     exit /b 1
 )
@@ -143,65 +198,58 @@ echo You can now run: NGXSMK_GameNet_Optimizer.exe
 echo.
 pause
 '''
-    
-    with open('install.bat', 'w') as f:
+
+    with open(SCRIPT_DIR / 'install.bat', 'w') as f:
         f.write(installer_content)
-    
-    print("✅ Installer script created")
+
+    print("[OK] Installer script created")
 
 def create_icon():
     """Create a simple icon file (placeholder)"""
-    # This is a placeholder - you can replace with a real icon
-    icon_content = '''# This is a placeholder for an icon file
+    with open(SCRIPT_DIR / 'icon_placeholder.txt', 'w') as f:
+        f.write('''# This is a placeholder for an icon file
 # To add a real icon:
 # 1. Create or find a .ico file
 # 2. Save it as 'icon.ico' in the project root
 # 3. The build script will automatically use it
-'''
-    
-    with open('icon_placeholder.txt', 'w') as f:
-        f.write(icon_content)
-    
-    print("ℹ️  Icon placeholder created (replace with real icon.ico for custom icon)")
+''')
+
+    print("Icon placeholder created (replace with real icon.ico for custom icon)")
 
 def main():
     """Main build process"""
-    print("🚀 NGXSMK GameNet Optimizer - Windows Executable Builder")
+    parser = argparse.ArgumentParser(description='Build NGXSMK GameNet Optimizer executable')
+    parser.add_argument('--arch', choices=['x86', 'x64'], default='x64',
+                        help='Target architecture (x86 for 32-bit, x64 for 64-bit, default: x64)')
+    args = parser.parse_args()
+
+    print("NGXSMK GameNet Optimizer - Windows Executable Builder")
     print("=" * 60)
-    
-    # Check if we're on Windows
+    print(f"Target architecture: {args.arch}")
+
     if sys.platform != 'win32':
-        print("⚠️  This script is designed for Windows")
+        print("[WARN] This script is designed for Windows")
         print("   For other platforms, use: python main.py")
         return
-    
-    # Install PyInstaller
+
+    build_frontend()
+
     if not install_pyinstaller():
         return
-    
-    # Create spec file
-    create_spec_file()
-    
-    # Create installer script
+
+    create_spec_file(arch=args.arch)
     create_installer_script()
-    
-    # Create icon placeholder
     create_icon()
-    
-    # Build executable
+
     if build_executable():
-        print("\n🎉 Build completed successfully!")
-        print("\n📁 Output files:")
-        print("   - dist/NGXSMK_GameNet_Optimizer.exe (Main executable)")
-        print("   - install.bat (Installer script)")
-        print("\n🚀 To run the executable:")
-        print("   1. Navigate to the 'dist' folder")
+        print("\nBuild completed successfully!")
+        print(f"\nOutput file:")
+        print(f"   scripts/dist/NGXSMK_GameNet_Optimizer.exe")
+        print("\nTo run the executable:")
+        print("   1. Navigate to the 'scripts/dist' folder")
         print("   2. Run 'NGXSMK_GameNet_Optimizer.exe'")
-        print("\n💡 For distribution:")
-        print("   - Copy the entire 'dist' folder")
-        print("   - Include 'install.bat' for dependency installation")
     else:
-        print("\n❌ Build failed. Check the error messages above.")
+        print("\n[ERROR] Build failed. Check the error messages above.")
 
 if __name__ == "__main__":
     main()

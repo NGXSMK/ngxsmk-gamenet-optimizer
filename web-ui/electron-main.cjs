@@ -27,8 +27,9 @@ function createWindow() {
     transparent: true,
     backgroundColor: '#00000000', // Transparent background for rounded corners effect
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.cjs'),
     },
     title: "NGXSMK Neural Optimizer",
     icon: path.join(__dirname, 'public/vite.svg') // Placeholder icon

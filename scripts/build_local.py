@@ -11,129 +11,141 @@ import shutil
 import time
 from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).parent.resolve()
+PROJECT_ROOT = SCRIPT_DIR.parent
+
+
 def print_banner():
     """Print build banner"""
     print("=" * 60)
-    print("🚀 NGXSMK GameNet Optimizer - Local Builder")
+    print("NGXSMK GameNet Optimizer - Local Builder")
     print("=" * 60)
     print()
 
+
 def check_requirements():
     """Check if all requirements are met"""
-    print("🔍 Checking requirements...")
-    
-    # Check Python version
-    if sys.version_info < (3, 13):
-        print("❌ Python 3.13+ required")
+    print("Checking requirements...")
+
+    if sys.version_info < (3, 8):
+        print("[ERROR] Python 3.8+ required")
         return False
-    
-    print(f"✅ Python {sys.version_info.major}.{sys.version_info.minor} detected")
-    
-    # Check if PyInstaller is available
+
+    print(f"[OK] Python {sys.version_info.major}.{sys.version_info.minor} detected")
+
     try:
-        import PyInstaller # type: ignore
-        print(f"✅ PyInstaller {PyInstaller.__version__} available")
+        import PyInstaller
+        print(f"[OK] PyInstaller {PyInstaller.__version__} available")
     except ImportError:
-        print("❌ PyInstaller not found. Installing...")
+        print("[ERROR] PyInstaller not found. Installing...")
         subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller"], check=True)
-        print("✅ PyInstaller installed")
-    
-    # Check if main.py exists
-    if not os.path.exists("main.py"):
-        print("❌ main.py not found")
+        print("[OK] PyInstaller installed")
+
+    api_path = PROJECT_ROOT / "src" / "ngx_optimizer" / "api.py"
+    if not api_path.exists():
+        print(f"[ERROR] {api_path} not found")
         return False
-    print("✅ main.py found")
-    
-    # Check if modules directory exists
-    if not os.path.exists("modules"):
-        print("❌ modules directory not found")
+    print(f"[OK] {api_path} found")
+
+    modules_dir = PROJECT_ROOT / "src" / "ngx_optimizer" / "modules"
+    if not modules_dir.is_dir():
+        print(f"[ERROR] {modules_dir} not found")
         return False
-    print("✅ modules directory found")
-    
+    print(f"[OK] {modules_dir} found")
+
     return True
+
 
 def clean_build():
     """Clean previous build artifacts"""
-    print("🧹 Cleaning previous builds...")
-    
-    dirs_to_clean = ["build", "dist", "__pycache__"]
-    for dir_name in dirs_to_clean:
-        if os.path.exists(dir_name):
-            shutil.rmtree(dir_name)
-            print(f"✅ Cleaned {dir_name}")
-    
-    # Clean .pyc files
-    for root, dirs, files in os.walk("."):
+    print("Cleaning previous builds...")
+
+    for dir_name in ["build", "dist", "__pycache__"]:
+        dir_path = PROJECT_ROOT / dir_name
+        if dir_path.exists():
+            shutil.rmtree(dir_path)
+            print(f"[OK] Cleaned {dir_name}")
+
+    for root, dirs, files in os.walk(str(PROJECT_ROOT)):
         for file in files:
             if file.endswith(".pyc"):
                 os.remove(os.path.join(root, file))
-    
-    print("✅ Build cleanup completed")
+
+    print("[OK] Build cleanup completed")
+
 
 def install_dependencies():
     """Install required dependencies"""
-    print("📦 Installing dependencies...")
-    
+    print("Installing dependencies...")
+
+    req_file = PROJECT_ROOT / "requirements.txt"
     try:
-        subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], 
-                      check=True, capture_output=True, text=True)
-        print("✅ Dependencies installed successfully")
+        subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(req_file)],
+                       check=True, capture_output=True, text=True)
+        print("[OK] Dependencies installed successfully")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ Failed to install dependencies: {e}")
+        print(f"[ERROR] Failed to install dependencies: {e}")
         print("Trying minimal installation...")
         try:
             minimal_deps = ["psutil", "pywin32", "ping3", "pyinstaller"]
             for dep in minimal_deps:
-                subprocess.run([sys.executable, "-m", "pip", "install", dep], 
-                              check=True, capture_output=True, text=True)
-            print("✅ Minimal dependencies installed")
+                subprocess.run([sys.executable, "-m", "pip", "install", dep],
+                               check=True, capture_output=True, text=True)
+            print("[OK] Minimal dependencies installed")
             return True
         except subprocess.CalledProcessError:
-            print("❌ Failed to install minimal dependencies")
+            print("[ERROR] Failed to install minimal dependencies")
             return False
+
 
 def build_executable():
     """Build the executable"""
-    print("🔨 Building executable...")
-    
+    print("Building executable...")
+
+    build_script = SCRIPT_DIR / "build_advanced_exe.py"
+    if not build_script.exists():
+        print(f"[ERROR] {build_script} not found")
+        return False
+
     try:
-        # Use the existing build script
-        subprocess.run([sys.executable, "build_simple_advanced.py"], 
-                       capture_output=True, text=True, check=True)
-        print("✅ Executable built successfully")
+        subprocess.run([sys.executable, str(build_script)],
+                       cwd=str(SCRIPT_DIR), check=True)
+        print("[OK] Executable built successfully")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ Build failed: {e}")
-        print("STDOUT:", e.stdout)
-        print("STDERR:", e.stderr)
+        print(f"[ERROR] Build failed: {e}")
         return False
+
 
 def test_executable():
     """Test the built executable"""
-    print("🧪 Testing executable...")
-    
-    exe_path = "dist/NGXSMK_GameNet_Optimizer_Advanced.exe"
-    if not os.path.exists(exe_path):
-        print("❌ Executable not found")
+    print("Testing executable...")
+
+    exe_path = SCRIPT_DIR / "dist" / "NGXSMK_GameNet_Optimizer_Advanced.exe"
+    if not exe_path.exists():
+        print(f"[ERROR] Executable not found at {exe_path}")
         return False
-    
-    # Check file size
+
     file_size = os.path.getsize(exe_path)
-    print(f"📊 Executable size: {file_size / (1024*1024):.1f} MB")
-    
-    if file_size < 5 * 1024 * 1024:  # Less than 5MB
-        print("⚠️  Warning: Executable size seems small")
+    print(f"Executable size: {file_size / (1024*1024):.1f} MB")
+
+    if file_size < 5 * 1024 * 1024:
+        print("[WARN]  Warning: Executable size seems small")
     else:
-        print("✅ Executable size is reasonable")
-    
-    print("✅ Executable test completed")
+        print("[OK] Executable size is reasonable")
+
+    print("[OK] Executable test completed")
     return True
+
 
 def create_build_info():
     """Create build information file"""
-    print("📝 Creating build information...")
-    
+    print("Creating build information...")
+
+    exe_path = SCRIPT_DIR / "dist" / "NGXSMK_GameNet_Optimizer_Advanced.exe"
+    exe_size = os.path.getsize(exe_path) / (1024 * 1024) if exe_path.exists() else 0
+
     build_info = f"""# NGXSMK GameNet Optimizer - Build Information
 
 ## Build Details
@@ -143,8 +155,8 @@ def create_build_info():
 - **Build Type**: Local Development
 
 ## Files
-- **Executable**: dist/NGXSMK_GameNet_Optimizer_Advanced.exe
-- **Size**: {os.path.getsize('dist/NGXSMK_GameNet_Optimizer_Advanced.exe') / (1024*1024):.1f} MB
+- **Executable**: {exe_path}
+- **Size**: {exe_size:.1f} MB
 
 ## Usage
 1. Run the executable: `NGXSMK_GameNet_Optimizer_Advanced.exe`
@@ -166,54 +178,52 @@ def create_build_info():
 - **Maintainer**: @NGXSMK
 
 ---
-**Made with ❤️ for the gaming community**
+**Made for the gaming community**
 """
-    
-    with open("BUILD_INFO.md", "w", encoding="utf-8") as f:
+
+    with open(PROJECT_ROOT / "BUILD_INFO.md", "w", encoding="utf-8") as f:
         f.write(build_info)
-    
-    print("✅ Build information created")
+
+    print("[OK] Build information created")
+
 
 def main():
     """Main build process"""
     print_banner()
-    
-    # Check requirements
+
     if not check_requirements():
-        print("❌ Requirements check failed")
+        print("[ERROR] Requirements check failed")
         return 1
-    
-    # Clean previous builds
+
     clean_build()
-    
-    # Install dependencies
+
     if not install_dependencies():
-        print("❌ Dependency installation failed")
+        print("[ERROR] Dependency installation failed")
         return 1
-    
-    # Build executable
+
     if not build_executable():
-        print("❌ Build failed")
+        print("[ERROR] Build failed")
         return 1
-    
-    # Test executable
+
     if not test_executable():
-        print("❌ Executable test failed")
+        print("[ERROR] Executable test failed")
         return 1
-    
-    # Create build info
+
     create_build_info()
-    
+
     print("\n" + "=" * 60)
-    print("🎉 BUILD COMPLETED SUCCESSFULLY!")
+    print("BUILD COMPLETED SUCCESSFULLY!")
     print("=" * 60)
-    print("📁 Executable: dist/NGXSMK_GameNet_Optimizer_Advanced.exe")
-    print(f"📊 Size: {os.path.getsize('dist/NGXSMK_GameNet_Optimizer_Advanced.exe') / (1024*1024):.1f} MB")
-    print("📝 Build Info: BUILD_INFO.md")
-    print("\n🚀 Ready to optimize your gaming experience!")
+    print(f"Executable: scripts/dist/NGXSMK_GameNet_Optimizer_Advanced.exe")
+    exe_path = SCRIPT_DIR / "dist" / "NGXSMK_GameNet_Optimizer_Advanced.exe"
+    if exe_path.exists():
+        print(f"Size: {os.path.getsize(exe_path) / (1024*1024):.1f} MB")
+    print("Build Info: BUILD_INFO.md")
+    print("\nReady to optimize your gaming experience!")
     print("=" * 60)
-    
+
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
