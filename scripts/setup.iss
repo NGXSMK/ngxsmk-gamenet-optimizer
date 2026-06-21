@@ -22,7 +22,6 @@ DisableDirPage=auto
 PrivilegesRequired=admin
 OutputDir=..\dist
 OutputBaseFilename=NGXSMK_GameNet_Optimizer_Setup_{#MyAppVersion}
-SetupIconFile=..\icon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/max
 SolidCompression=yes
@@ -37,9 +36,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: checkedonce
 
 [Files]
-Source: "..\dist\NGXSMK_GameNet_Optimizer_Advanced.exe"; DestDir: "{app}"; Flags: ignoreversion
-; Include web frontend assets if bundled
-Source: "..\dist\web-ui\dist\*"; DestDir: "{app}\web-ui\dist"; Flags: ignoreversion createallsubdirs recursesubdirs; Check: DirExists('..\dist\web-ui\dist')
+Source: "..\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -50,9 +47,3 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: po
 
 [UninstallRun]
 Filename: "{cmd}"; Parameters: "/C taskkill /IM ""{#MyAppExeName}"" /F /T >nul 2>&1"; Flags: runhidden
-
-[Code]
-function DirExists(Param: string): boolean;
-begin
-  Result := DirExists(Param);
-end;
