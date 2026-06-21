@@ -15,11 +15,20 @@
 
 ## Quick Start
 
-### Download Pre-built Executable (Recommended)
-1. **Download** the latest release from [Releases](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
-2. **Extract** the zip file
-3. **Run** `NGXSMK Neural Optimizer.exe` (The new Electron-based Neural Dashboard)
-4. **Enjoy** vectorized, low-latency gaming!
+### Option 1: Auto-Install (Recommended)
+1. **Download** [`install.bat`](install.bat) (or clone the repo and run it)
+2. **Double-click** `install.bat` — it automatically detects your architecture, downloads the latest EXE, and launches it
+3. **No Python, Node.js, or dependencies required**
+
+### Option 2: Manual Download
+1. Go to [Releases](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases/latest)
+2. Download `NGXSMK_GameNet_Optimizer_x64.exe` (64-bit) or `NGXSMK_GameNet_Optimizer_x86.exe` (32-bit)
+3. **Right-click the EXE → Properties → Unblock** (if SmartScreen appears)
+4. Double-click to run
+
+### Option 3: Installer (Setup.exe)
+1. Download `NGXSMK_GameNet_Optimizer_Setup.exe` from [Releases](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases/latest)
+2. Run the installer — adds Start Menu shortcut and uninstall support
 
 ## ✨ What is NGXSMK GameNet Optimizer?
 
