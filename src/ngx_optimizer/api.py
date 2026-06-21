@@ -4,6 +4,18 @@ import os
 import json
 import subprocess
 import platform
+
+# Patch subprocess.Popen globally on Windows to prevent flashing console windows
+if platform.system() == 'Windows':
+    _orig_popen = subprocess.Popen
+    class SafePopen(_orig_popen):
+        def __init__(self, *args, **kwargs):
+            creationflags = kwargs.get('creationflags', 0)
+            creationflags |= 0x08000000 # CREATE_NO_WINDOW
+            kwargs['creationflags'] = creationflags
+            super().__init__(*args, **kwargs)
+    subprocess.Popen = SafePopen
+
 from flask import Flask, jsonify, request, send_from_directory # type: ignore
 from flask_cors import CORS # type: ignore
 import threading
@@ -690,5 +702,7 @@ def run_server():
     app.run(host='127.0.0.1', port=5000, debug=False)
 
 if __name__ == '__main__':
+    import multiprocessing
+    multiprocessing.freeze_support()
     print("NGXSMK Backend API starting on http://localhost:5000")
     run_server()
