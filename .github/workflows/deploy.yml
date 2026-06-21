@@ -28,6 +28,18 @@ jobs:
 
       - uses: actions/setup-node@v4
 
+      - name: Download latest release EXEs
+        run: |
+          echo "Fetching latest release assets..."
+          gh release download latest \
+            --repo NGXSMK/ngxsmk-gamenet-optimizer \
+            --dir public/assets \
+            --pattern "*.exe" \
+            --skip-existing 2>/dev/null || echo "No release assets found (build may still be running)"
+          ls -la public/assets/ 2>/dev/null || echo "assets/ is empty"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Install dependencies
         run: npm install
 

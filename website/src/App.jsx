@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 const GITHUB_REPO = 'https://github.com/NGXSMK/ngxsmk-gamenet-optimizer';
-const DOWNLOAD_URL_64 = 'https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases/latest/download/NGXSMK_GameNet_Optimizer_x64.exe';
-const DOWNLOAD_URL_32 = 'https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases/latest/download/NGXSMK_GameNet_Optimizer_x86.exe';
+const BASE = '/ngxsmk-gamenet-optimizer';
+const DOWNLOAD_URL_64 = `${BASE}/assets/NGXSMK_GameNet_Optimizer_x64.exe`;
+const DOWNLOAD_URL_32 = `${BASE}/assets/NGXSMK_GameNet_Optimizer_x86.exe`;
+const DOWNLOAD_URL_SETUP = `${BASE}/assets/NGXSMK_GameNet_Optimizer_Setup.exe`;
 
 const features = [
   {
@@ -167,7 +169,7 @@ const App = () => {
             <a href="#features" onClick={(e) => { e.preventDefault(); scrollTo('features'); }}>Features</a>
             <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollTo('showcase'); }}>Screenshots</a>
             <a href="#faq" onClick={(e) => { e.preventDefault(); scrollTo('faq'); }}>FAQ</a>
-            <a href={DOWNLOAD_URL_64} target="_blank" rel="noopener noreferrer" className="nav-download">Download</a>
+            <a href={DOWNLOAD_URL_SETUP} target="_blank" rel="noopener noreferrer" className="nav-download">Download</a>
           </nav>
           <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
             <span></span><span></span><span></span>
@@ -193,9 +195,9 @@ const App = () => {
                 stack optimization — all in a single, free, open-source tool.
               </p>
               <div className="hero-actions">
-                <a href={DOWNLOAD_URL_64} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-large">
+                <a href={DOWNLOAD_URL_SETUP} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-large">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  Download Free (15 MB)
+                  Download Free (Setup)
                 </a>
                 <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollTo('showcase'); }} className="btn btn-secondary btn-large">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -469,9 +471,9 @@ const App = () => {
           <div className="container">
             <h2>Ready to Dominate?</h2>
             <p>Download GameNet Optimizer free. No sign-up. No strings attached.</p>
-            <a href={DOWNLOAD_URL_64} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-large">
+            <a href={DOWNLOAD_URL_SETUP} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-large">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Download v2.3.0 Free
+              Download v2.3.1 Free (Setup)
             </a>
             <p className="cta-meta">
               <span>15 MB &middot; Portable EXE</span>
@@ -496,6 +498,7 @@ const App = () => {
               <h4>Product</h4>
               <a href="#features" onClick={(e) => { e.preventDefault(); scrollTo('features'); }}>Features</a>
               <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollTo('showcase'); }}>Screenshots</a>
+              <a href={DOWNLOAD_URL_SETUP} target="_blank" rel="noopener noreferrer">Download Setup</a>
               <a href={DOWNLOAD_URL_64} target="_blank" rel="noopener noreferrer">Download 64-bit</a>
               <a href={DOWNLOAD_URL_32} target="_blank" rel="noopener noreferrer">Download 32-bit</a>
               <a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer">View Source</a>
