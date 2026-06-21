@@ -1,7 +1,7 @@
 # NGXSMK Neural Optimizer
 
 [![Website](https://img.shields.io/badge/Website-ngxsmk.github.io-6366f1.svg)](https://ngxsmk.github.io/ngxsmk-gamenet-optimizer/)
-[![Version](https://img.shields.io/badge/Version-2.3.0-blue.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
+[![Version](https://img.shields.io/badge/Version-2.3.1-blue.svg)](https://github.com/NGXSMK/ngxsmk-gamenet-optimizer/releases)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![React](https://img.shields.io/badge/UI-React%2018-61dafb.svg)](https://reactjs.org/)
 [![Electron](https://img.shields.io/badge/Desktop-Electron-47848f.svg)](https://www.electronjs.org/)

@@ -2,7 +2,7 @@
 ; Build with: iscc scripts/setup.iss
 
 #define MyAppName "NGXSMK GameNet Optimizer"
-#define MyAppVersion "2.3.0"
+#define MyAppVersion "2.3.1"
 #define MyAppPublisher "NGXSMK"
 #define MyAppURL "https://github.com/NGXSMK/ngxsmk-gamenet-optimizer"
 #define MyAppExeName "NGXSMK_GameNet_Optimizer_Advanced.exe"
